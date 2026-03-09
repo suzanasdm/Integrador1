@@ -11,7 +11,7 @@ public class UsuarioService {
      private UsuarioRepository usuarioRepository;
 
     public Usuario cadastrar (Usuario usuario) throws Exception{
-        if (usuarioRepository.existsByemail(usuario.getEmail())) {
+        if (usuarioRepository.existsByEmail(usuario.getEmail())) {
             throw  new Exception("Email já cadastrado!");
         }
         if (!validarSenha(usuario.getSenha())) {
@@ -20,6 +20,12 @@ public class UsuarioService {
         }
  return usuarioRepository.save(usuario);
     }
+
+    public Usuario buscar(Long id) {
+        return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
+    }
+
+
     private boolean validarSenha(String senha) {
         String regex = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
         return senha.matches(regex);
