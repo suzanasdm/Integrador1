@@ -14,11 +14,13 @@ public class ContaBancariaService {
 
     @Autowired
     private UsuarioRepository usuarioRepository;
+    @Autowired
+    private ContaBancariaRepository contaBancariaRepository;
 
     public ContaBancaria cadastrar(ContaBancaria conta, Long usuarioId) {
         return usuarioRepository.findById(usuarioId).map(usuario -> {
             conta.setUsuario(usuario);
-            return usuarioRepository.save(conta);
+            return contaBancariaRepository.save(conta);
         }).orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
     }
 }

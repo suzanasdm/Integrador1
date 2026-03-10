@@ -7,6 +7,7 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
+
 public class ContaBancariaDTO {
     @NotBlank(message = "O banco é obrigatório")
     private String banco;
