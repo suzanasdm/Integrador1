@@ -10,8 +10,8 @@ public class ContaBancaria {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Long id;
 
-    @Column(nullable = false)
-    private String banco;
+    @Enumerated(EnumType.STRING)
+    private BancoEnum banco;
 
     private String agencia;
 
@@ -32,11 +32,11 @@ private Long id;
         this.id = id;
     }
 
-    public String getBanco() {
+    public BancoEnum getBanco() {
         return banco;
     }
 
-    public void setBanco(String banco) {
+    public void setBanco(BancoEnum banco) {
         this.banco = banco;
     }
 
