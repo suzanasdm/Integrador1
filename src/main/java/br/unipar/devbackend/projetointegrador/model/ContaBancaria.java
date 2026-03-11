@@ -10,8 +10,8 @@ public class ContaBancaria {
 @GeneratedValue(strategy = GenerationType.IDENTITY)
 private Long id;
 
-    @Column(nullable = false)
-    private String banco;
+    @Enumerated(EnumType.STRING)
+    private BancoEnum banco;
 
     private String agencia;
 
@@ -23,4 +23,52 @@ private Long id;
     @ManyToOne
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public BancoEnum getBanco() {
+        return banco;
+    }
+
+    public void setBanco(BancoEnum banco) {
+        this.banco = banco;
+    }
+
+    public String getAgencia() {
+        return agencia;
+    }
+
+    public void setAgencia(String agencia) {
+        this.agencia = agencia;
+    }
+
+    public String getNumeroConta() {
+        return numeroConta;
+    }
+
+    public void setNumeroConta(String numeroConta) {
+        this.numeroConta = numeroConta;
+    }
+
+    public Double getSaldo() {
+        return saldo;
+    }
+
+    public void setSaldo(Double saldo) {
+        this.saldo = saldo;
+    }
+
+    public Usuario getUsuario() {
+        return usuario;
+    }
+
+    public void setUsuario(Usuario usuario) {
+        this.usuario = usuario;
+    }
 }
