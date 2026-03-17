@@ -23,6 +23,13 @@ public class Usuario {
 
     private LocalDate dataCadastro;
 
+    public Usuario(Long id, String nome, String email, String senha, LocalDate dataCadastro) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.dataCadastro = dataCadastro;
+    }
 
     public LocalDate getDataCadastro() {
         return dataCadastro;
