@@ -13,9 +13,9 @@ public class ContaBancariaService {
 
 
     @Autowired
-    private UsuarioRepository usuarioRepository;
-    @Autowired
     private ContaBancariaRepository contaBancariaRepository;
+    @Autowired
+    private UsuarioRepository usuarioRepository;
 
     public ContaBancaria cadastrar(ContaBancaria conta, Long usuarioId) {
         return usuarioRepository.findById(usuarioId).map(usuario -> {

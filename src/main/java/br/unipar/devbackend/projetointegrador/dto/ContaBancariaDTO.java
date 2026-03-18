@@ -8,8 +8,9 @@ import jakarta.validation.constraints.Size;
 import lombok.Data;
 
 @Data
+
 public class ContaBancariaDTO {
-    @NotBlank(message = "O banco é obrigatório")
+   
     private BancoEnum banco;
 
     @NotBlank(message = "A agência é obrigatória")
@@ -26,6 +27,7 @@ public class ContaBancariaDTO {
     @NotNull(message = "O ID do usuário é obrigatório")
     private Long usuarioId;
 
+
     public ContaBancariaDTO(BancoEnum banco, String agencia, String numeroConta, Double saldo, Long usuarioId) {
         this.banco = banco;
         this.agencia = agencia;
@@ -34,43 +36,43 @@ public class ContaBancariaDTO {
         this.usuarioId = usuarioId;
     }
 
-    public @NotBlank(message = "O banco é obrigatório") BancoEnum getBanco() {
+    public BancoEnum getBanco() {
         return banco;
     }
 
-    public void setBanco(@NotBlank(message = "O banco é obrigatório") BancoEnum banco) {
+    public void setBanco(BancoEnum banco) {
         this.banco = banco;
     }
 
-    public @NotBlank(message = "A agência é obrigatória") @Size(min = 3, max = 5, message = "A agência deve ter entre 3 e 5 caracteres") String getAgencia() {
+    public String getAgencia() {
         return agencia;
     }
 
-    public void setAgencia(@NotBlank(message = "A agência é obrigatória") @Size(min = 3, max = 5, message = "A agência deve ter entre 3 e 5 caracteres") String agencia) {
+    public void setAgencia(String agencia) {
         this.agencia = agencia;
     }
 
-    public @NotBlank(message = "O número da conta é obrigatório") String getNumeroConta() {
+    public String getNumeroConta() {
         return numeroConta;
     }
 
-    public void setNumeroConta(@NotBlank(message = "O número da conta é obrigatório") String numeroConta) {
+    public void setNumeroConta(String numeroConta) {
         this.numeroConta = numeroConta;
     }
 
-    public @NotNull(message = "O saldo inicial é obrigatório") @Min(value = 0, message = "O saldo inicial deve ser maior ou igual a zero") Double getSaldo() {
+    public Double getSaldo() {
         return saldo;
     }
 
-    public void setSaldo(@NotNull(message = "O saldo inicial é obrigatório") @Min(value = 0, message = "O saldo inicial deve ser maior ou igual a zero") Double saldo) {
+    public void setSaldo(Double saldo) {
         this.saldo = saldo;
     }
 
-    public @NotNull(message = "O ID do usuário é obrigatório") Long getUsuarioId() {
+    public Long getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(@NotNull(message = "O ID do usuário é obrigatório") Long usuarioId) {
+    public void setUsuarioId(Long usuarioId) {
         this.usuarioId = usuarioId;
     }
 }

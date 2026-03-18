@@ -25,4 +25,44 @@ public class TransacaoDTO {
 
     @NotNull(message = "O ID da categoria é obrigatório")
     private Long categoriaId;
+
+    public String getDescricao() {
+        return descricao;
+    }
+
+    public Double getValor() {
+        return valor;
+    }
+
+    public LocalDateTime getData() {
+        return data;
+    }
+
+    public Long getContaId() {
+        return contaId;
+    }
+
+    public Long getCategoriaId() {
+        return categoriaId;
+    }
+
+    public void setDescricao(String descricao) {
+        this.descricao = descricao;
+    }
+
+    public void setValor(Double valor) {
+        this.valor = valor;
+    }
+
+    public void setData(LocalDateTime data) {
+        this.data = data;
+    }
+
+    public void setContaId(Long contaId) {
+        this.contaId = contaId;
+    }
+
+    public void setCategoriaId(Long categoriaId) {
+        this.categoriaId = categoriaId;
+    }
 }

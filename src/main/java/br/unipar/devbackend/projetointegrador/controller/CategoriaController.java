@@ -18,7 +18,7 @@ public class CategoriaController {
     @PostMapping
     public Categoria salvar(@Valid @RequestBody CategoriaDTO dto) {
         Categoria categoria = new Categoria();
-        categoria.setDescricao(dto.getDescricao());
+        categoria.setNome(dto.getNome());
         categoria.setTipo(dto.getTipo());
 
         return categoriaService.cadastrar(categoria, dto.getUsuarioId());

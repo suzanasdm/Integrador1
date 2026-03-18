@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/usuario")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*")
-public class UsuarioController {
 
+
+public class UsuarioController {
+    @Autowired
     private final UsuarioService usuarioService;
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
