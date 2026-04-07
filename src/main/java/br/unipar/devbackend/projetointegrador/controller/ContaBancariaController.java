@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/contas")
 public class ContaBancariaController {
     @Autowired
-private ContaBancariaService service;
+    private ContaBancariaService service;
 
     @PostMapping
     public ContaBancaria salvar(@Valid @RequestBody ContaBancariaDTO dto) {

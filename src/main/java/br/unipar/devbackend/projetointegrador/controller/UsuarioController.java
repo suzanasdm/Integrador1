@@ -7,12 +7,14 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("/usuario")
-@RequiredArgsConstructor
-@CrossOrigin(origins = "*")
-public class UsuarioController {
+import java.time.LocalDateTime;
 
+@RestController
+@RequestMapping("/api/usuarios")
+
+
+public class UsuarioController {
+    @Autowired
     private final UsuarioService usuarioService;
     public UsuarioController(UsuarioService usuarioService) {
         this.usuarioService = usuarioService;
@@ -21,6 +23,9 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuario) throws Exception {
         return ResponseEntity.ok(usuarioService.cadastrar(usuario));
+
+
+
     }
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> buscar(@PathVariable Long id) {

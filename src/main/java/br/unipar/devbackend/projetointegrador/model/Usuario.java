@@ -2,8 +2,9 @@ package br.unipar.devbackend.projetointegrador.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.http.ResponseEntity;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Data
@@ -21,23 +22,18 @@ public class Usuario {
     @Column(unique = true)
     private String senha;
 
-    private LocalDate dataCadastro;
+    private LocalDateTime dataCadastro;
 
 
-    public LocalDate getDataCadastro() {
-        return dataCadastro;
+    public Usuario() {
     }
 
-    public String getSenha() {
-        return senha;
-    }
-
-    public String getEmail() {
-        return email;
-    }
-
-    public String getNome() {
-        return nome;
+    public Usuario(Long id, String nome, String email, String senha, LocalDateTime dataCadastro) {
+        this.id = id;
+        this.nome = nome;
+        this.email = email;
+        this.senha = senha;
+        this.dataCadastro = dataCadastro;
     }
 
     public Long getId() {
@@ -48,19 +44,37 @@ public class Usuario {
         this.id = id;
     }
 
+    public String getNome() {
+        return nome;
+    }
+
     public void setNome(String nome) {
         this.nome = nome;
+    }
+
+    public String getEmail() {
+        return email;
     }
 
     public void setEmail(String email) {
         this.email = email;
     }
 
+    public String getSenha() {
+        return senha;
+    }
+
     public void setSenha(String senha) {
         this.senha = senha;
     }
 
-    public void setDataCadastro(LocalDate dataCadastro) {
+    public LocalDateTime getDataCadastro() {
+        return dataCadastro;
+    }
+
+    public void setDataCadastro(LocalDateTime dataCadastro) {
         this.dataCadastro = dataCadastro;
     }
+
+
 }

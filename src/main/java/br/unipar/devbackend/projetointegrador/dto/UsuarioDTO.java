@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Pattern;
 
 
 public class UsuarioDTO {
+
     @NotBlank(message = "O nome é obrigatório")
     private String nome;
 
