@@ -7,8 +7,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDateTime;
+
 @RestController
-@RequestMapping("/usuario")
+@RequestMapping("/api/usuarios")
 
 
 public class UsuarioController {
@@ -21,6 +23,9 @@ public class UsuarioController {
     @PostMapping
     public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuario) throws Exception {
         return ResponseEntity.ok(usuarioService.cadastrar(usuario));
+
+
+
     }
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> buscar(@PathVariable Long id) {
