@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/contas")
+@RequestMapping("/api/contas")
 public class ContaBancariaController {
     @Autowired
     private ContaBancariaService service;
