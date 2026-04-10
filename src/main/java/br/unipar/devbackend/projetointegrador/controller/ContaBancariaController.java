@@ -7,10 +7,9 @@ import br.unipar.devbackend.projetointegrador.service.ContaBancariaService;
 import jakarta.validation.Valid;
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/contas")
@@ -21,8 +20,7 @@ public class ContaBancariaController {
     @PostMapping
     public ContaBancaria salvar(@Valid @RequestBody ContaBancariaDTO dto) {
         ContaBancaria conta = new ContaBancaria();
-        conta.setBanco(BancoEnum.NUBANK);
-        conta.setBanco(BancoEnum.ITAU);
+        conta.setBanco(dto.getBanco());
         conta.setAgencia(dto.getAgencia());
         conta.setNumeroConta(dto.getNumeroConta());
         conta.setSaldo(dto.getSaldo());
@@ -31,4 +29,10 @@ public class ContaBancariaController {
     }
 
 
+
+    @GetMapping("/usuario/{id}")
+    public List<ContaBancaria> buscarPorUsuario(@PathVariable Long id) {
+        // Você precisa ter esse método 'buscarPorUsuario' criado no seu Service
+        return service.buscarPorUsuario(id);
+    }
 }
