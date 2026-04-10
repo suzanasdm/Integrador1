@@ -47,4 +47,8 @@ public class ReceitaService {
     public List<Receita> listarPorUsuario(Long usuarioId) {
         return receitaRepository.findByUsuarioId(usuarioId);
     }
+    public Double getTotalReceitas(Long usuarioId) {
+        Double total = receitaRepository.somarTotalPorUsuario(usuarioId);
+        return (total != null) ? total : 0.0;
+    }
 }
