@@ -7,6 +7,8 @@ import lombok.Data;
 
 @Data
 public class CategoriaDTO {
+
+    private Long id;
     @NotBlank(message = "O nome da categoria é obrigatória")
     private String nome;
 

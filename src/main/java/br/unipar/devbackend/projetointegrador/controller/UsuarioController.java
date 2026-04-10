@@ -24,8 +24,16 @@ public class UsuarioController {
     public ResponseEntity<Usuario> cadastrarUsuario(@RequestBody Usuario usuario) throws Exception {
         return ResponseEntity.ok(usuarioService.cadastrar(usuario));
 
+    }
 
-
+    @PostMapping("/login")
+    public ResponseEntity<?> login(@RequestBody Usuario usuario) {
+        try {
+            Usuario usuarioLogado = usuarioService.login(usuario.getEmail(), usuario.getSenha());
+            return ResponseEntity.ok(usuarioLogado);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
     @GetMapping("/{id}")
     public ResponseEntity<Usuario> buscar(@PathVariable Long id) {
