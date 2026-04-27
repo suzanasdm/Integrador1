@@ -19,7 +19,7 @@ public class Usuario {
     @Column(unique = true)
     private String email;
 
-    @Column(unique = true)
+    @Column(unique = false)
     private String senha;
 
     private LocalDateTime dataCadastro;

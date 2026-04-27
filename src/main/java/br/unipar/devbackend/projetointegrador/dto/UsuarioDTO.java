@@ -21,4 +21,36 @@ public class UsuarioDTO {
                     "com letra maiúscula, número e caractere especial"
     )
     private String senha;
+
+    public @NotBlank(message = "O nome é obrigatório") String getNome() {
+        return nome;
+    }
+
+    public void setNome(@NotBlank(message = "O nome é obrigatório") String nome) {
+        this.nome = nome;
+    }
+
+    public @Email(message = "O email deve ser em um formato válido") @NotBlank(message = "O email é obrigatório") String getEmail() {
+        return email;
+    }
+
+    public void setEmail(@Email(message = "O email deve ser em um formato válido") @NotBlank(message = "O email é obrigatório") String email) {
+        this.email = email;
+    }
+
+    public @Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$",
+            message = " A senha deve ter no mínimo 8 caracteres, " +
+                    "com letra maiúscula, número e caractere especial"
+    ) String getSenha() {
+        return senha;
+    }
+
+    public void setSenha(@Pattern(
+            regexp = "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$",
+            message = " A senha deve ter no mínimo 8 caracteres, " +
+                    "com letra maiúscula, número e caractere especial"
+    ) String senha) {
+        this.senha = senha;
+    }
 }
