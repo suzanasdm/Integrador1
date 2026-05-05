@@ -16,10 +16,13 @@ public class Receita {
 
     @Column(nullable = false)
     private String descricao;
+    @ManyToOne
+    @JoinColumn(name = "conta_id") // Este campo "manda" na coluna
+    private ContaBancaria conta;
 
-
-    @Column(nullable = false)
-    private long contaId;
+    // Se você REALMENTE precisa manter o campo contaId separado:
+    @Column(name = "conta_id", insertable = false, updatable = false)
+    private Long contaId;
 
 
 
@@ -44,6 +47,17 @@ public class Receita {
 
     public Receita() {}
 
+    public Receita(Long id, String descricao, ContaBancaria conta, Long contaId, Double valor, LocalDate data, Usuario usuario, Categoria categoria) {
+        this.id = id;
+        this.descricao = descricao;
+        this.conta = conta;
+        this.contaId = contaId;
+        this.valor = valor;
+        this.data = data;
+        this.usuario = usuario;
+        this.categoria = categoria;
+    }
+
     public Long getId() {
         return id;
     }
@@ -60,11 +74,19 @@ public class Receita {
         this.descricao = descricao;
     }
 
-    public long getContaId() {
+    public ContaBancaria getConta() {
+        return conta;
+    }
+
+    public void setConta(ContaBancaria conta) {
+        this.conta = conta;
+    }
+
+    public Long getContaId() {
         return contaId;
     }
 
-    public void setContaId(long contaId) {
+    public void setContaId(Long contaId) {
         this.contaId = contaId;
     }
 
@@ -98,17 +120,5 @@ public class Receita {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
-    }
-
-    public Receita(Long id, String descricao, long contaId, Double valor, LocalDate data, Usuario usuario, Categoria categoria) {
-        this.id = id;
-        this.descricao = descricao;
-        this.contaId = contaId;
-        this.valor = valor;
-        this.data = data;
-        this.usuario = usuario;
-        this.categoria = categoria;
-
-
     }
 }
