@@ -17,6 +17,12 @@ public class Receita {
     @Column(nullable = false)
     private String descricao;
 
+
+    @Column(nullable = false)
+    private long contaId;
+
+
+
     @Column(nullable = false)
     private Double valor;
 
@@ -38,15 +44,6 @@ public class Receita {
 
     public Receita() {}
 
-    public Receita(Long id, String descricao, Double valor, LocalDate data, Usuario usuario, Categoria categoria) {
-        this.id = id;
-        this.descricao = descricao;
-        this.valor = valor;
-        this.data = data;
-        this.usuario = usuario;
-        this.categoria = categoria;
-    }
-
     public Long getId() {
         return id;
     }
@@ -61,6 +58,14 @@ public class Receita {
 
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public long getContaId() {
+        return contaId;
+    }
+
+    public void setContaId(long contaId) {
+        this.contaId = contaId;
     }
 
     public Double getValor() {
@@ -93,5 +98,17 @@ public class Receita {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public Receita(Long id, String descricao, long contaId, Double valor, LocalDate data, Usuario usuario, Categoria categoria) {
+        this.id = id;
+        this.descricao = descricao;
+        this.contaId = contaId;
+        this.valor = valor;
+        this.data = data;
+        this.usuario = usuario;
+        this.categoria = categoria;
+
+
     }
 }
