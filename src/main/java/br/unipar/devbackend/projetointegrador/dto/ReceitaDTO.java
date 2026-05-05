@@ -12,17 +12,20 @@ public class ReceitaDTO {
     private Double valor;
     private Long usuarioId;
     private Long categoriaId;
+    private long contaId;
     private LocalDate data;
+
 
     public ReceitaDTO() {
     }
 
 
-    public ReceitaDTO(String descricao, Double valor, Long usuarioId, Long categoriaId, LocalDate data) {
+    public ReceitaDTO(String descricao, Double valor, Long usuarioId, Long categoriaId, long contaId, LocalDate data) {
         this.descricao = descricao;
         this.valor = valor;
         this.usuarioId = usuarioId;
         this.categoriaId = categoriaId;
+        this.contaId = contaId;
         this.data = data;
     }
 
@@ -56,6 +59,14 @@ public class ReceitaDTO {
 
     public void setCategoriaId(Long categoriaId) {
         this.categoriaId = categoriaId;
+    }
+
+    public long getContaId() {
+        return contaId;
+    }
+
+    public void setContaId(long contaId) {
+        this.contaId = contaId;
     }
 
     public LocalDate getData() {
