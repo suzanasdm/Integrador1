@@ -30,6 +30,25 @@ public class Despesa {
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
 
+    @ManyToOne
+    @JoinColumn(name = "conta_id") // Este campo "manda" na coluna
+    private ContaBancaria conta;
+
+
+
+    public Despesa() {
+    }
+
+    public Despesa(Long id, String descricao, Double valor, LocalDate data, Usuario usuario, Categoria categoria, ContaBancaria conta) {
+        this.id = id;
+        this.descricao = descricao;
+        this.valor = valor;
+        this.data = data;
+        this.usuario = usuario;
+        this.categoria = categoria;
+        this.conta = conta;
+    }
+
     public Long getId() {
         return id;
     }
@@ -76,5 +95,13 @@ public class Despesa {
 
     public void setCategoria(Categoria categoria) {
         this.categoria = categoria;
+    }
+
+    public ContaBancaria getConta() {
+        return conta;
+    }
+
+    public void setConta(ContaBancaria conta) {
+        this.conta = conta;
     }
 }

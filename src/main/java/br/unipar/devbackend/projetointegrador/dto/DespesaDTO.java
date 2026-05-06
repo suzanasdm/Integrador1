@@ -11,17 +11,10 @@ public class DespesaDTO {
     private LocalDate data;
     private Long usuarioId;
     private Long categoriaId;
+    private long  ContaId;
 
     // O construtor padrão é necessário para o Jackson (JSON)
     public DespesaDTO() {}
-
-    public DespesaDTO(String descricao, Double valor, LocalDate data, Long usuarioId, Long categoriaId) {
-        this.descricao = descricao;
-        this.valor = valor;
-        this.data = data;
-        this.usuarioId = usuarioId;
-        this.categoriaId = categoriaId;
-    }
 
     public String getDescricao() {
         return descricao;
@@ -61,5 +54,24 @@ public class DespesaDTO {
 
     public void setCategoriaId(Long categoriaId) {
         this.categoriaId = categoriaId;
+    }
+
+    public long getContaId() {
+        return ContaId;
+    }
+
+    public void setContaId(long contaId) {
+        ContaId = contaId;
+    }
+
+    public DespesaDTO(String descricao, Double valor, LocalDate data, Long usuarioId, Long categoriaId, long contaId) {
+        this.descricao = descricao;
+        this.valor = valor;
+        this.data = data;
+        this.usuarioId = usuarioId;
+        this.categoriaId = categoriaId;
+        ContaId = contaId;
+
+
     }
 }
