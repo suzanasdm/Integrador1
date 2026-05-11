@@ -8,6 +8,7 @@ import java.time.LocalDateTime;
 @Entity
 @Data
 public class Transacao {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -19,6 +20,14 @@ public class Transacao {
 
     private LocalDateTime data;
 
+    // ID único vindo do OFX
+    @Column(unique = true)
+    private String fitId;
+
+    // Entrada ou saída
+    @Enumerated(EnumType.STRING)
+    private CategoriaEnum tipo;
+
     @ManyToOne
     @JoinColumn(name = "categoria_id")
     private Categoria categoria;
@@ -26,6 +35,21 @@ public class Transacao {
     @ManyToOne
     @JoinColumn(name = "conta_id")
     private ContaBancaria conta;
+
+    public Transacao(Long id, String descricao, Double valor, LocalDateTime data, String fitId, CategoriaEnum tipo, Categoria categoria, ContaBancaria conta) {
+        this.id = id;
+        this.descricao = descricao;
+        this.valor = valor;
+        this.data = data;
+        this.fitId = fitId;
+        this.tipo = tipo;
+        this.categoria = categoria;
+        this.conta = conta;
+    }
+
+    public Transacao() {
+
+    }
 
     public Long getId() {
         return id;
@@ -59,6 +83,22 @@ public class Transacao {
         this.data = data;
     }
 
+    public String getFitId() {
+        return fitId;
+    }
+
+    public void setFitId(String fitId) {
+        this.fitId = fitId;
+    }
+
+    public CategoriaEnum getTipo() {
+        return tipo;
+    }
+
+    public void setTipo(CategoriaEnum tipo) {
+        this.tipo = tipo;
+    }
+
     public Categoria getCategoria() {
         return categoria;
     }
@@ -74,7 +114,4 @@ public class Transacao {
     public void setConta(ContaBancaria conta) {
         this.conta = conta;
     }
-
-
-
 }
