@@ -20,7 +20,7 @@ import java.io.InputStreamReader;
 import java.time.ZoneId;
 
 @Service
-public class OfxService<MessageSet> {
+public class OfxService{
 
     @Autowired
     private TransacaoRepository transacaoRepository;

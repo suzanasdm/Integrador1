@@ -1,34 +1,39 @@
 package br.unipar.devbackend.projetointegrador.controller;
 
+import br.unipar.devbackend.projetointegrador.dto.TransacaoDTO;
 import br.unipar.devbackend.projetointegrador.model.Transacao;
 import br.unipar.devbackend.projetointegrador.service.TransacaoService;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
+
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/transacao")
+@RequestMapping("/api/transacoes")
 @CrossOrigin(origins = "*")
 public class TransacaoController {
 
-    @Autowired
-    private TransacaoService service;
+    private final TransacaoService transacaoService;
+
+    public TransacaoController(TransacaoService transacaoService) {
+        this.transacaoService = transacaoService;
+    }
 
     @GetMapping
-    public List<Transacao> listar() {
-
-        return service.listar();
-
+    public ResponseEntity<List<Transacao>> listar() {
+        return ResponseEntity.ok(transacaoService.listar());
     }
 
     @PostMapping
-    public Transacao salvar(
-            @RequestBody Transacao transacao) {
-
-        return service.salvar(transacao);
-
+    public ResponseEntity<?> salvar(@Valid @RequestBody TransacaoDTO dto) {
+        try {
+            Transacao transacao = transacaoService.salvar(dto);
+            return ResponseEntity.ok(transacao);
+        } catch (RuntimeException e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
-
 }
