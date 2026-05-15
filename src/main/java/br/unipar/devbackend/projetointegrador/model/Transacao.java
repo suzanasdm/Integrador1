@@ -29,9 +29,8 @@ public class Transacao {
     private CategoriaEnum tipo;
 
     @ManyToOne
-    @JoinColumn(name = "categoria_id")
+    @JoinColumn(name = "categoria_id", nullable = true)
     private Categoria categoria;
-
     @ManyToOne
     @JoinColumn(name = "conta_id")
     private ContaBancaria conta;

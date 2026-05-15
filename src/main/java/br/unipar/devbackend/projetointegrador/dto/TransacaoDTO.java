@@ -18,7 +18,7 @@ public class TransacaoDTO {
     private Double valor;
 
     @NotNull(message = "A data é obrigatória")
-    private LocalDateTime data;
+    private LocalDate data;
 
     @NotNull(message = "O ID da conta é obrigatório")
     private Long contaId;
@@ -30,39 +30,40 @@ public class TransacaoDTO {
         return descricao;
     }
 
-    public Double getValor() {
-        return valor;
-    }
-
-    public LocalDateTime getData() {
-        return data;
-    }
-
-    public Long getContaId() {
-        return contaId;
-    }
-
-    public Long getCategoriaId() {
-        return categoriaId;
-    }
-
     public void setDescricao(String descricao) {
         this.descricao = descricao;
+    }
+
+    public Double getValor() {
+        return valor;
     }
 
     public void setValor(Double valor) {
         this.valor = valor;
     }
 
-    public void setData(LocalDateTime data) {
+    public LocalDate getData() {
+        return data;
+    }
+
+    public void setData(LocalDate data) {
         this.data = data;
+    }
+
+    public Long getContaId() {
+        return contaId;
     }
 
     public void setContaId(Long contaId) {
         this.contaId = contaId;
     }
 
+    public Long getCategoriaId() {
+        return categoriaId;
+    }
+
     public void setCategoriaId(Long categoriaId) {
         this.categoriaId = categoriaId;
     }
 }
+
