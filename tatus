@@ -1,0 +1,155 @@
+[33mcommit 7a3424464821a328c3ed70b978eed4e61f71043c[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mrelease/emerson[m[33m, [m[1;31morigin/master[m[33m, [m[1;31morigin/HEAD[m[33m, [m[1;32mmaster[m[33m)[m
+Author: emerson-silva91 <emerson241291@edu.unipar.br>
+Date:   Thu May 14 21:13:06 2026 -0300
+
+    Emerson 14-05
+
+[33mcommit 24e69e6ab2539614c4118e586bd149c1fb089b6b[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Mon May 11 19:03:46 2026 -0300
+
+    Versao Ofx
+
+[33mcommit d2cdfa9c39ae0d290b3f3dadd492c99f736e0b0c[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Tue May 5 21:49:54 2026 -0300
+
+    versao despesa
+
+[33mcommit 47daf2014913831de0f3817d9537325c9df09073[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Tue May 5 20:11:46 2026 -0300
+
+    05/05
+
+[33mcommit ae332d9662471b64dfa7670eec03578d847135f3[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Mon May 4 21:21:52 2026 -0300
+
+    versao licando conta bancaria
+
+[33mcommit 929155196d254a2dbf4fa86e0bb4056a173e8e42[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Mon Apr 27 20:35:06 2026 -0300
+
+    agora vai com vontade
+
+[33mcommit d57efc62da35e90fadf9a40024d7c38c0213ed34[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Fri Apr 10 15:29:33 2026 -0300
+
+    10/04suzana
+
+[33mcommit 28771db1fbe09ecd393795810337915aa11ea4ea[m
+Merge: 8d2ec55 23d70da
+Author: emerson pereira da silva <166187148+emerson-silva91@users.noreply.github.com>
+Date:   Thu Apr 9 22:07:53 2026 -0300
+
+    Merge pull request #4 from suzanasdm/Emerson
+    
+    cadastro Receita
+
+[33mcommit 23d70da1a382e3c920c0ae1eeac5e998dd3aff7e[m[33m ([m[1;31morigin/Emerson[m[33m)[m
+Author: emerson-silva91 <emerson241291@edu.unipar.br>
+Date:   Thu Apr 9 22:07:08 2026 -0300
+
+    cadastro Receita
+
+[33mcommit 8d2ec5539b66284683d7394600eb721349ae70c4[m
+Merge: 9ac34d9 b89ee1d
+Author: emerson pereira da silva <166187148+emerson-silva91@users.noreply.github.com>
+Date:   Wed Apr 8 13:10:42 2026 -0300
+
+    Merge pull request #3 from suzanasdm/Emerson
+    
+    Emerson
+
+[33mcommit b89ee1d2f5d3ad706454234dadd8df6aeff610eb[m
+Author: emerson pereira da silva <166187148+emerson-silva91@users.noreply.github.com>
+Date:   Wed Apr 8 13:08:31 2026 -0300
+
+    cadatro de conta funcionando
+
+[33mcommit 9ac34d9e7d20f5c93370f49f00e7b8633bbe35ca[m
+Merge: 1ed6bdc c0aed27
+Author: emerson pereira da silva <166187148+emerson-silva91@users.noreply.github.com>
+Date:   Mon Apr 6 22:42:41 2026 -0300
+
+    Merge pull request #2 from suzanasdm/Emerson
+    
+    Até o momeno o login e  cadastro usuário é pra estar funcionando, salvo alguns detalhes
+
+[33mcommit c0aed2759057ee84f5a782b2c822ad04fdcc2d1b[m
+Author: emerson pereira da silva <166187148+emerson-silva91@users.noreply.github.com>
+Date:   Mon Apr 6 22:33:42 2026 -0300
+
+    cadatro de usuario funcionando
+
+[33mcommit 5847a41084ff03593f6bea2e0dea3123e61e6402[m[33m ([m[1;31morigin/teste[m[33m)[m
+Author: emerson pereira da silva <166187148+emerson-silva91@users.noreply.github.com>
+Date:   Tue Mar 17 22:15:37 2026 -0300
+
+    Usuario conectado
+
+[33mcommit 7de0b1f464eca7001ad8c408c5a721f18a7fbb7a[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Tue Mar 17 20:23:39 2026 -0300
+
+    17/03 suzana
+
+[33mcommit 1ed6bdc3496f8c0ee4f5551a4a6e91fde2dfe3da[m
+Merge: 8142df9 d35e0ba
+Author: emerson pereira da silva <166187148+emerson-silva91@users.noreply.github.com>
+Date:   Tue Mar 10 22:05:48 2026 -0300
+
+    Merge pull request #1 from suzanasdm/teste
+    
+    teste
+
+[33mcommit d35e0ba1bff99dad0f009d35918d4e1f70aba44c[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Tue Mar 10 21:57:17 2026 -0300
+
+    10/03
+
+[33mcommit ebee8f3e258529fd2e7e1fc967e2e9ec8960b34c[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Tue Mar 10 20:02:15 2026 -0300
+
+    10/03
+
+[33mcommit 58d86125bba4f85f4dae1ed3a7af26df96382ea6[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Tue Mar 10 19:38:46 2026 -0300
+
+    10/03
+
+[33mcommit 8142df9fa2daf6a94be8d8a333768f602d8aa836[m
+Author: emerson pereira da silva <166187148+emerson-silva91@users.noreply.github.com>
+Date:   Mon Mar 9 19:02:24 2026 -0300
+
+    Usuario conectado
+
+[33mcommit 9bb178512df825f08617ea4d19de28ebd59ec95b[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Sat Mar 7 20:17:26 2026 -0300
+
+    teste
+
+[33mcommit 05f4aec7498dfd0ca01768e161501bd672d5d45f[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Wed Mar 4 20:29:57 2026 -0300
+
+    suzana
+
+[33mcommit 869057cda0520922e8ea82bef60d07e76d79781c[m
+Author: suzanasdm <164531292+suzanasdm@users.noreply.github.com>
+Date:   Wed Mar 4 18:05:27 2026 -0300
+
+    ok
+
+[33mcommit 24b34c17825140babc4ffd5a73923f4d2094eb12[m
+Author: emerson pereira da silva <166187148+emerson-silva91@users.noreply.github.com>
+Date:   Tue Mar 3 21:28:09 2026 -0300
+
+    Inicio Projeto
