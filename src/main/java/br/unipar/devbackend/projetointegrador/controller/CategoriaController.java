@@ -2,6 +2,7 @@ package br.unipar.devbackend.projetointegrador.controller;
 
 import br.unipar.devbackend.projetointegrador.dto.CategoriaDTO;
 import br.unipar.devbackend.projetointegrador.model.Categoria;
+import br.unipar.devbackend.projetointegrador.model.CategoriaEnum;
 import br.unipar.devbackend.projetointegrador.service.CategoriaService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,5 +34,15 @@ public class CategoriaController {
     @GetMapping("/usuario/{usuarioId}")
     public ResponseEntity<List<Categoria>> listarPorUsuario(@PathVariable Long usuarioId) {
         return ResponseEntity.ok(categoriaService.listarPorUsuario(usuarioId));
+    }
+
+    @GetMapping("/usuario/{usuarioId}/tipo/{tipo}")
+    public ResponseEntity<List<Categoria>> listarPorUsuarioETipo(
+            @PathVariable Long usuarioId,
+            @PathVariable CategoriaEnum tipo) {
+
+        return ResponseEntity.ok(
+                categoriaService.listarPorUsuarioETipo(usuarioId, tipo)
+        );
     }
 }

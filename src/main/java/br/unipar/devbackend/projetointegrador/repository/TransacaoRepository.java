@@ -1,12 +1,14 @@
 package br.unipar.devbackend.projetointegrador.repository;
 
 import br.unipar.devbackend.projetointegrador.model.Transacao;
-
 import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface TransacaoRepository
-        extends JpaRepository<Transacao, Long> {
+import java.util.List;
 
-    boolean existsByFitId(String fitId);
+public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
+
+    boolean existsByFitIdAndContaId(String fitId, Long contaId);
+
+    List<Transacao> findByUsuarioIdOrderByDataDesc(Long usuarioId);
 
 }

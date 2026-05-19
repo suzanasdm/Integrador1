@@ -2,6 +2,7 @@ package br.unipar.devbackend.projetointegrador.service;
 
 import br.unipar.devbackend.projetointegrador.dto.CategoriaDTO;
 import br.unipar.devbackend.projetointegrador.model.Categoria;
+import br.unipar.devbackend.projetointegrador.model.CategoriaEnum;
 import br.unipar.devbackend.projetointegrador.model.Usuario;
 import br.unipar.devbackend.projetointegrador.repository.CategoriaRepository;
 import br.unipar.devbackend.projetointegrador.repository.UsuarioRepository;
@@ -34,4 +35,12 @@ public class CategoriaService {
 
     public List<Categoria> listarPorUsuario(Long usuarioId) {
         return categoriaRepository.findByUsuarioId(usuarioId);
-    }}
+    }
+
+    public List<Categoria> listarPorUsuarioETipo(Long usuarioId, CategoriaEnum tipo) {
+        return categoriaRepository.findByUsuarioIdAndTipo(usuarioId, tipo);
+    }
+
+
+}
+
