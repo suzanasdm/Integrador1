@@ -1,15 +1,11 @@
 package br.unipar.devbackend.projetointegrador.controller;
 
-import br.unipar.devbackend.projetointegrador.dto.DashboardTransacaoDTO;
-import br.unipar.devbackend.projetointegrador.model.Despesa;
-import br.unipar.devbackend.projetointegrador.model.Receita;
+import br.unipar.devbackend.projetointegrador.dto.MovimentacaoDTO;
 import br.unipar.devbackend.projetointegrador.service.DespesaService;
+import br.unipar.devbackend.projetointegrador.service.MovimentacaoService;
 import br.unipar.devbackend.projetointegrador.service.ReceitaService;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -19,11 +15,19 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class DashboardController {
 
-    @Autowired
-    private ReceitaService receitaService;
+    private final ReceitaService receitaService;
+    private final DespesaService despesaService;
+    private final MovimentacaoService movimentacaoService;
 
-    @Autowired
-    private DespesaService despesaService;
+    public DashboardController(
+            ReceitaService receitaService,
+            DespesaService despesaService,
+            MovimentacaoService movimentacaoService
+    ) {
+        this.receitaService = receitaService;
+        this.despesaService = despesaService;
+        this.movimentacaoService = movimentacaoService;
+    }
 
     @GetMapping("/{usuarioId}")
     public Map<String, Object> getResumo(@PathVariable Long usuarioId) {
@@ -31,48 +35,18 @@ public class DashboardController {
         Double totalReceita = receitaService.getTotalReceitas(usuarioId);
         Double totalDespesa = despesaService.getTotalDespesas(usuarioId);
 
-        List<Receita> receitas = receitaService.listarPorUsuario(usuarioId);
-        List<Despesa> despesas = despesaService.buscarPorUsuario(usuarioId);
+        List<MovimentacaoDTO> movimentacoes =
+                movimentacaoService.listarPorUsuario(usuarioId);
 
-        List<DashboardTransacaoDTO> transacoes = new ArrayList<>();
-
-        for (Receita receita : receitas) {
-            transacoes.add(
-                    new DashboardTransacaoDTO(
-                            receita.getData(),
-                            receita.getDescricao(),
-                            receita.getCategoria() != null ? receita.getCategoria().getNome() : "Sem categoria",
-                            "RECEITA",
-                            receita.getValor()
-                    )
-            );
-        }
-
-        for (Despesa despesa : despesas) {
-            transacoes.add(
-                    new DashboardTransacaoDTO(
-                            despesa.getData(),
-                            despesa.getDescricao(),
-                            despesa.getCategoria() != null ? despesa.getCategoria().getNome() : "Sem categoria",
-                            "DESPESA",
-                            despesa.getValor()
-                    )
-            );
-        }
-
-        transacoes.sort(
-                Comparator.comparing(DashboardTransacaoDTO::getData).reversed()
-        );
-
-        if (transacoes.size() > 10) {
-            transacoes = transacoes.subList(0, 10);
+        if (movimentacoes.size() > 10) {
+            movimentacoes = movimentacoes.subList(0, 10);
         }
 
         Map<String, Object> response = new HashMap<>();
         response.put("receita", totalReceita);
         response.put("despesa", totalDespesa);
         response.put("saldoTotal", totalReceita - totalDespesa);
-        response.put("transacoes", transacoes);
+        response.put("transacoes", movimentacoes);
 
         return response;
     }
