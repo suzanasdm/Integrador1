@@ -22,7 +22,8 @@ public class Transacao {
     private String descricao;
 
     @Column(nullable = false)
-    private Double valor;
+    private Double valor ;
+
 
     private LocalDateTime data;
 
