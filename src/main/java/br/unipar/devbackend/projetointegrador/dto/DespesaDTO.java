@@ -1,77 +1,37 @@
 package br.unipar.devbackend.projetointegrador.dto;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Positive;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
+
 import java.time.LocalDate;
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class DespesaDTO {
 
+    @NotBlank(message = "A descrição é obrigatória")
     private String descricao;
+
+    @NotNull(message = "O valor é obrigatório")
+    @Positive(message = "O valor deve ser maior que zero")
     private Double valor;
+
+    @NotNull(message = "A data é obrigatória")
     private LocalDate data;
+
+    @NotNull(message = "O ID do usuário é obrigatório")
     private Long usuarioId;
+
+    @NotNull(message = "O ID da categoria é obrigatório")
     private Long categoriaId;
-    private long  ContaId;
 
-    // O construtor padrão é necessário para o Jackson (JSON)
-    public DespesaDTO() {}
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public Double getValor() {
-        return valor;
-    }
-
-    public void setValor(Double valor) {
-        this.valor = valor;
-    }
-
-    public LocalDate getData() {
-        return data;
-    }
-
-    public void setData(LocalDate data) {
-        this.data = data;
-    }
-
-    public Long getUsuarioId() {
-        return usuarioId;
-    }
-
-    public void setUsuarioId(Long usuarioId) {
-        this.usuarioId = usuarioId;
-    }
-
-    public Long getCategoriaId() {
-        return categoriaId;
-    }
-
-    public void setCategoriaId(Long categoriaId) {
-        this.categoriaId = categoriaId;
-    }
-
-    public long getContaId() {
-        return ContaId;
-    }
-
-    public void setContaId(long contaId) {
-        ContaId = contaId;
-    }
-
-    public DespesaDTO(String descricao, Double valor, LocalDate data, Long usuarioId, Long categoriaId, long contaId) {
-        this.descricao = descricao;
-        this.valor = valor;
-        this.data = data;
-        this.usuarioId = usuarioId;
-        this.categoriaId = categoriaId;
-        ContaId = contaId;
+    @NotNull(message = "O ID da conta bancária é obrigatório")
+    private Long contaId;
 
 
-    }
 }

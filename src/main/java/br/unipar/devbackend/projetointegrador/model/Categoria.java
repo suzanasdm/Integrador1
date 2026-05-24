@@ -23,36 +23,6 @@ public class Categoria {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    public Usuario getUsuario() {
-        return usuario;
-    }
 
-    public CategoriaEnum getTipo() {
-        return tipo;
-    }
-
-    public String getNome() {
-        return nome;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public void setNome(String nome) {
-        this.nome = nome;
-    }
-
-    public void setTipo(CategoriaEnum tipo) {
-        this.tipo = tipo;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
 
   }

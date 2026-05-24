@@ -5,7 +5,7 @@ import br.unipar.devbackend.projetointegrador.model.Despesa;
 import br.unipar.devbackend.projetointegrador.service.DespesaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
-
+import jakarta.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -21,7 +21,7 @@ public class DespesaController {
     }
 
     @PostMapping
-    public Despesa salvar(@RequestBody DespesaDTO dto) {
+    public Despesa salvar(@Valid @RequestBody DespesaDTO dto) {
         return service.salvar(dto);
     }
 }

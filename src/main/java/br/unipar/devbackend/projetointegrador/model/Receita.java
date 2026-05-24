@@ -16,6 +16,7 @@ public class Receita {
 
     @Column(nullable = false)
     private String descricao;
+
     @ManyToOne
     @JoinColumn(name = "conta_id") // Este campo "manda" na coluna
     private ContaBancaria conta;
@@ -44,81 +45,4 @@ public class Receita {
 
 
 
-
-    public Receita() {}
-
-    public Receita(Long id, String descricao, ContaBancaria conta, Long contaId, Double valor, LocalDate data, Usuario usuario, Categoria categoria) {
-        this.id = id;
-        this.descricao = descricao;
-        this.conta = conta;
-        this.contaId = contaId;
-        this.valor = valor;
-        this.data = data;
-        this.usuario = usuario;
-        this.categoria = categoria;
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getDescricao() {
-        return descricao;
-    }
-
-    public void setDescricao(String descricao) {
-        this.descricao = descricao;
-    }
-
-    public ContaBancaria getConta() {
-        return conta;
-    }
-
-    public void setConta(ContaBancaria conta) {
-        this.conta = conta;
-    }
-
-    public Long getContaId() {
-        return contaId;
-    }
-
-    public void setContaId(Long contaId) {
-        this.contaId = contaId;
-    }
-
-    public Double getValor() {
-        return valor;
-    }
-
-    public void setValor(Double valor) {
-        this.valor = valor;
-    }
-
-    public LocalDate getData() {
-        return data;
-    }
-
-    public void setData(LocalDate data) {
-        this.data = data;
-    }
-
-    public Usuario getUsuario() {
-        return usuario;
-    }
-
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
-    }
-
-    public Categoria getCategoria() {
-        return categoria;
-    }
-
-    public void setCategoria(Categoria categoria) {
-        this.categoria = categoria;
-    }
 }

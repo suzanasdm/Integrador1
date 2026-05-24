@@ -2,15 +2,16 @@ package br.unipar.devbackend.projetointegrador.service;
 
 import br.unipar.devbackend.projetointegrador.dto.DespesaDTO;
 import br.unipar.devbackend.projetointegrador.model.Categoria;
+import br.unipar.devbackend.projetointegrador.model.CategoriaEnum;
+import br.unipar.devbackend.projetointegrador.model.ContaBancaria;
 import br.unipar.devbackend.projetointegrador.model.Despesa;
 import br.unipar.devbackend.projetointegrador.model.Usuario;
-import br.unipar.devbackend.projetointegrador.model.ContaBancaria;
 import br.unipar.devbackend.projetointegrador.repository.CategoriaRepository;
+import br.unipar.devbackend.projetointegrador.repository.ContaBancariaRepository;
 import br.unipar.devbackend.projetointegrador.repository.DespesaRepository;
 import br.unipar.devbackend.projetointegrador.repository.UsuarioRepository;
-import br.unipar.devbackend.projetointegrador.repository.ContaBancariaRepository; // Importante
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional; // Importante
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -20,13 +21,14 @@ public class DespesaService {
     private final DespesaRepository despesaRepository;
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
-    private final ContaBancariaRepository contaRepository; // Adicionado
+    private final ContaBancariaRepository contaRepository;
 
-    // Construtor único (melhor prática que @Autowired em campos)
-    public DespesaService(DespesaRepository despesaRepository,
-                          UsuarioRepository usuarioRepository,
-                          CategoriaRepository categoriaRepository,
-                          ContaBancariaRepository contaRepository) {
+    public DespesaService(
+            DespesaRepository despesaRepository,
+            UsuarioRepository usuarioRepository,
+            CategoriaRepository categoriaRepository,
+            ContaBancariaRepository contaRepository
+    ) {
         this.despesaRepository = despesaRepository;
         this.usuarioRepository = usuarioRepository;
         this.categoriaRepository = categoriaRepository;
@@ -39,12 +41,12 @@ public class DespesaService {
 
     public Double getTotalDespesas(Long usuarioId) {
         Double total = despesaRepository.somarTotalPorUsuario(usuarioId);
-        return (total != null) ? total : 0.0;
+        return total != null ? total : 0.0;
     }
 
-    @Transactional // Garante que se o saldo não atualizar, a despesa não é salva
+    @Transactional
     public Despesa salvar(DespesaDTO dto) {
-        // 1. Busca as entidades relacionadas
+
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
                 .orElseThrow(() -> new RuntimeException("Usuário não encontrado"));
 
@@ -54,23 +56,41 @@ public class DespesaService {
         ContaBancaria conta = contaRepository.findById(dto.getContaId())
                 .orElseThrow(() -> new RuntimeException("Conta bancária não encontrada"));
 
-        // 2. Cria a entidade Despesa e associa os objetos
+        validarContaDoUsuario(conta, usuario.getId());
+        validarCategoriaDoUsuario(categoria, usuario.getId());
+        validarCategoriaDespesa(categoria);
+
         Despesa despesa = new Despesa();
         despesa.setDescricao(dto.getDescricao());
         despesa.setValor(dto.getValor());
         despesa.setData(dto.getData());
         despesa.setUsuario(usuario);
         despesa.setCategoria(categoria);
-
-        // FUNDAMENTAL: Associa o objeto conta para aparecer o nome do banco no front
         despesa.setConta(conta);
 
-        // 3. Lógica Financeira: SUBTRAIR o saldo (Despesa tira dinheiro)
         Double saldoAtual = conta.getSaldo() != null ? conta.getSaldo() : 0.0;
         conta.setSaldo(saldoAtual - dto.getValor());
 
-        // 4. Salva a conta com saldo atualizado e depois a despesa
         contaRepository.save(conta);
+
         return despesaRepository.save(despesa);
+    }
+
+    private void validarContaDoUsuario(ContaBancaria conta, Long usuarioId) {
+        if (conta.getUsuario() == null || !conta.getUsuario().getId().equals(usuarioId)) {
+            throw new RuntimeException("A conta bancária não pertence ao usuário informado.");
+        }
+    }
+
+    private void validarCategoriaDoUsuario(Categoria categoria, Long usuarioId) {
+        if (categoria.getUsuario() == null || !categoria.getUsuario().getId().equals(usuarioId)) {
+            throw new RuntimeException("A categoria não pertence ao usuário informado.");
+        }
+    }
+
+    private void validarCategoriaDespesa(Categoria categoria) {
+        if (categoria.getTipo() != CategoriaEnum.DESPESA) {
+            throw new RuntimeException("Para registrar uma despesa, selecione uma categoria do tipo DESPESA.");
+        }
     }
 }
