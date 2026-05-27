@@ -29,6 +29,7 @@ public class FluxoCaixaService {
 
         List<MovimentacaoDTO> movimentacoesFiltradas =
                 movimentacoesDoUsuario.stream()
+                        .filter(mov -> mov.getData() != null)
                         .filter(mov -> {
                             LocalDate dataMovimentacao = mov.getData().toLocalDate();
 
@@ -36,14 +37,13 @@ public class FluxoCaixaService {
                                     && !dataMovimentacao.isAfter(fim);
                         })
                         .toList();
-
         Double entradas = movimentacoesFiltradas.stream()
-                .filter(mov -> "RECEITA".equals(mov.getTipo()))
+                .filter(mov -> "RECEITA".equalsIgnoreCase(mov.getTipo()))
                 .mapToDouble(MovimentacaoDTO::getValor)
                 .sum();
 
         Double saidas = movimentacoesFiltradas.stream()
-                .filter(mov -> "DESPESA".equals(mov.getTipo()))
+                .filter(mov -> "DESPESA".equalsIgnoreCase(mov.getTipo()))
                 .mapToDouble(MovimentacaoDTO::getValor)
                 .sum();
 

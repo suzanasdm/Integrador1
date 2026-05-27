@@ -28,4 +28,20 @@ public class ReceitaController {
     public ResponseEntity<List<Receita>> listarPorUsuario(@PathVariable Long usuarioId) {
         return ResponseEntity.ok(receitaService.listarPorUsuario(usuarioId));
     }
+    @PutMapping("/{id}")
+    public ResponseEntity<Receita> atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody ReceitaDTO dto
+    ) {
+        return ResponseEntity.ok(receitaService.atualizar(id, dto));
+    }
+
+    @DeleteMapping("/{id}/usuario/{usuarioId}")
+    public ResponseEntity<Void> excluir(
+            @PathVariable Long id,
+            @PathVariable Long usuarioId
+    ) {
+        receitaService.excluir(id, usuarioId);
+        return ResponseEntity.noContent().build();
+    }
 }

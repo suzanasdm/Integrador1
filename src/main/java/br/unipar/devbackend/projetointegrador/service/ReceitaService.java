@@ -93,4 +93,69 @@ public class ReceitaService {
             throw new RuntimeException("Para registrar uma receita, selecione uma categoria do tipo RECEITA.");
         }
     }
+    @Transactional
+    public Receita atualizar(Long id, ReceitaDTO dto) {
+
+        Receita receitaExistente = receitaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Receita não encontrada."));
+
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        Categoria novaCategoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada."));
+
+        ContaBancaria novaConta = contaRepository.findById(dto.getContaId())
+                .orElseThrow(() -> new RuntimeException("Conta bancária não encontrada."));
+
+        validarContaDoUsuario(novaConta, usuario.getId());
+        validarCategoriaDoUsuario(novaCategoria, usuario.getId());
+        validarCategoriaReceita(novaCategoria);
+
+        if (!receitaExistente.getUsuario().getId().equals(usuario.getId())) {
+            throw new RuntimeException("Esta receita não pertence ao usuário informado.");
+        }
+
+        ContaBancaria contaAntiga = receitaExistente.getConta();
+
+        if (contaAntiga != null) {
+            Double saldoContaAntiga = contaAntiga.getSaldo() != null ? contaAntiga.getSaldo() : 0.0;
+            contaAntiga.setSaldo(saldoContaAntiga - receitaExistente.getValor());
+            contaRepository.save(contaAntiga);
+        }
+
+        Double saldoNovaConta = novaConta.getSaldo() != null ? novaConta.getSaldo() : 0.0;
+        novaConta.setSaldo(saldoNovaConta + dto.getValor());
+        contaRepository.save(novaConta);
+
+        receitaExistente.setDescricao(dto.getDescricao());
+        receitaExistente.setValor(dto.getValor());
+        receitaExistente.setData(dto.getData());
+        receitaExistente.setUsuario(usuario);
+        receitaExistente.setCategoria(novaCategoria);
+        receitaExistente.setConta(novaConta);
+
+        return receitaRepository.save(receitaExistente);
+    }
+
+    @Transactional
+    public void excluir(Long id, Long usuarioId) {
+
+        Receita receita = receitaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Receita não encontrada."));
+
+        if (!receita.getUsuario().getId().equals(usuarioId)) {
+            throw new RuntimeException("Esta receita não pertence ao usuário informado.");
+        }
+
+        ContaBancaria conta = receita.getConta();
+
+        if (conta != null) {
+            Double saldoAtual = conta.getSaldo() != null ? conta.getSaldo() : 0.0;
+            conta.setSaldo(saldoAtual - receita.getValor());
+            contaRepository.save(conta);
+        }
+
+        receitaRepository.delete(receita);
+    }
 }

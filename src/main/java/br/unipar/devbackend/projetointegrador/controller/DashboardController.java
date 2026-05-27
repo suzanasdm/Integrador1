@@ -32,21 +32,30 @@ public class DashboardController {
     @GetMapping("/{usuarioId}")
     public Map<String, Object> getResumo(@PathVariable Long usuarioId) {
 
-        Double totalReceita = receitaService.getTotalReceitas(usuarioId);
-        Double totalDespesa = despesaService.getTotalDespesas(usuarioId);
-
         List<MovimentacaoDTO> movimentacoes =
                 movimentacaoService.listarPorUsuario(usuarioId);
 
-        if (movimentacoes.size() > 10) {
-            movimentacoes = movimentacoes.subList(0, 10);
+        Double totalReceita = movimentacoes.stream()
+                .filter(mov -> "RECEITA".equalsIgnoreCase(mov.getTipo()))
+                .mapToDouble(MovimentacaoDTO::getValor)
+                .sum();
+
+        Double totalDespesa = movimentacoes.stream()
+                .filter(mov -> "DESPESA".equalsIgnoreCase(mov.getTipo()))
+                .mapToDouble(MovimentacaoDTO::getValor)
+                .sum();
+
+        List<MovimentacaoDTO> ultimasMovimentacoes = movimentacoes;
+
+        if (ultimasMovimentacoes.size() > 10) {
+            ultimasMovimentacoes = ultimasMovimentacoes.subList(0, 10);
         }
 
         Map<String, Object> response = new HashMap<>();
         response.put("receita", totalReceita);
         response.put("despesa", totalDespesa);
         response.put("saldoTotal", totalReceita - totalDespesa);
-        response.put("transacoes", movimentacoes);
+        response.put("transacoes", ultimasMovimentacoes);
 
         return response;
     }

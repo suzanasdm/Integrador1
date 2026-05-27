@@ -93,4 +93,69 @@ public class DespesaService {
             throw new RuntimeException("Para registrar uma despesa, selecione uma categoria do tipo DESPESA.");
         }
     }
+    @Transactional
+    public Despesa atualizar(Long id, DespesaDTO dto) {
+
+        Despesa despesaExistente = despesaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Despesa não encontrada."));
+
+        Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        Categoria novaCategoria = categoriaRepository.findById(dto.getCategoriaId())
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada."));
+
+        ContaBancaria novaConta = contaRepository.findById(dto.getContaId())
+                .orElseThrow(() -> new RuntimeException("Conta bancária não encontrada."));
+
+        validarContaDoUsuario(novaConta, usuario.getId());
+        validarCategoriaDoUsuario(novaCategoria, usuario.getId());
+        validarCategoriaDespesa(novaCategoria);
+
+        if (!despesaExistente.getUsuario().getId().equals(usuario.getId())) {
+            throw new RuntimeException("Esta despesa não pertence ao usuário informado.");
+        }
+
+        ContaBancaria contaAntiga = despesaExistente.getConta();
+
+        if (contaAntiga != null) {
+            Double saldoContaAntiga = contaAntiga.getSaldo() != null ? contaAntiga.getSaldo() : 0.0;
+            contaAntiga.setSaldo(saldoContaAntiga + despesaExistente.getValor());
+            contaRepository.save(contaAntiga);
+        }
+
+        Double saldoNovaConta = novaConta.getSaldo() != null ? novaConta.getSaldo() : 0.0;
+        novaConta.setSaldo(saldoNovaConta - dto.getValor());
+        contaRepository.save(novaConta);
+
+        despesaExistente.setDescricao(dto.getDescricao());
+        despesaExistente.setValor(dto.getValor());
+        despesaExistente.setData(dto.getData());
+        despesaExistente.setUsuario(usuario);
+        despesaExistente.setCategoria(novaCategoria);
+        despesaExistente.setConta(novaConta);
+
+        return despesaRepository.save(despesaExistente);
+    }
+
+    @Transactional
+    public void excluir(Long id, Long usuarioId) {
+
+        Despesa despesa = despesaRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Despesa não encontrada."));
+
+        if (!despesa.getUsuario().getId().equals(usuarioId)) {
+            throw new RuntimeException("Esta despesa não pertence ao usuário informado.");
+        }
+
+        ContaBancaria conta = despesa.getConta();
+
+        if (conta != null) {
+            Double saldoAtual = conta.getSaldo() != null ? conta.getSaldo() : 0.0;
+            conta.setSaldo(saldoAtual + despesa.getValor());
+            contaRepository.save(conta);
+        }
+
+        despesaRepository.delete(despesa);
+    }
 }

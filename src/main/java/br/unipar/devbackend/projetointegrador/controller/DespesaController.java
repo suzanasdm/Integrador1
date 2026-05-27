@@ -28,4 +28,19 @@ public class DespesaController {
     public Despesa salvar(@Valid @RequestBody DespesaDTO dto) {
         return service.salvar(dto);
     }
+    @PutMapping("/{id}")
+    public Despesa atualizar(
+            @PathVariable Long id,
+            @Valid @RequestBody DespesaDTO dto
+    ) {
+        return service.atualizar(id, dto);
+    }
+
+    @DeleteMapping("/{id}/usuario/{usuarioId}")
+    public void excluir(
+            @PathVariable Long id,
+            @PathVariable Long usuarioId
+    ) {
+        service.excluir(id, usuarioId);
+    }
 }

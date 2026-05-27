@@ -35,10 +35,13 @@ public class MovimentacaoService {
             movimentacoes.add(new MovimentacaoDTO(
                     receita.getId(),
                     receita.getData().atStartOfDay(),
-                    receita.getDescricao(),"RECEITA",
+                    receita.getDescricao(),
+                    "RECEITA",
                     Math.abs(receita.getValor()),
-                    receita.getCategoria() != null ? receita.getCategoria().getNome() : "Sem Categoria",
-                    receita.getConta() != null ? receita.getConta().getBanco().name(): "Sem Conta",
+                    receita.getCategoria() != null ? receita.getCategoria().getNome() : "Sem categoria",
+                    receita.getCategoria() != null ? receita.getCategoria().getId() : null,
+                    receita.getConta() != null ? receita.getConta().getBanco().name() : "Sem conta",
+                    receita.getConta() != null ? receita.getConta().getId() : null,
                     "MANUAL"
             ));
         }
@@ -51,10 +54,11 @@ public class MovimentacaoService {
                             "DESPESA",
                             Math.abs(despesa.getValor()),
                             despesa.getCategoria() != null ? despesa.getCategoria().getNome() : "Sem categoria",
+                            despesa.getCategoria() != null ? despesa.getCategoria().getId() : null,
                             despesa.getConta() != null ? despesa.getConta().getBanco().name() : "Sem conta",
+                            despesa.getConta() != null ? despesa.getConta().getId() : null,
                             "MANUAL"
-                    )
-            );
+                    ));
         }
 
         for (Transacao transacao : transacoesOfx) {
@@ -66,10 +70,11 @@ public class MovimentacaoService {
                             transacao.getTipo() != null ? transacao.getTipo().name() : "DESPESA",
                             Math.abs(transacao.getValor()),
                             transacao.getCategoria() != null ? transacao.getCategoria().getNome() : "Sem categoria",
+                            transacao.getCategoria() != null ? transacao.getCategoria().getId() : null,
                             transacao.getConta() != null ? transacao.getConta().getBanco().name() : "Sem conta",
+                            transacao.getConta() != null ? transacao.getConta().getId() : null,
                             "OFX"
-                    )
-            );
+                    ));
         }
 
         movimentacoes.sort(
