@@ -1,12 +1,12 @@
 package br.unipar.devbackend.projetointegrador.controller;
 
 import br.unipar.devbackend.projetointegrador.dto.MovimentacaoDTO;
-import br.unipar.devbackend.projetointegrador.service.DespesaService;
+import br.unipar.devbackend.projetointegrador.dto.ResumoCategoriaDTO;
 import br.unipar.devbackend.projetointegrador.service.MovimentacaoService;
-import br.unipar.devbackend.projetointegrador.service.ReceitaService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -15,17 +15,9 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class DashboardController {
 
-    private final ReceitaService receitaService;
-    private final DespesaService despesaService;
     private final MovimentacaoService movimentacaoService;
 
-    public DashboardController(
-            ReceitaService receitaService,
-            DespesaService despesaService,
-            MovimentacaoService movimentacaoService
-    ) {
-        this.receitaService = receitaService;
-        this.despesaService = despesaService;
+    public DashboardController(MovimentacaoService movimentacaoService) {
         this.movimentacaoService = movimentacaoService;
     }
 
@@ -51,12 +43,54 @@ public class DashboardController {
             ultimasMovimentacoes = ultimasMovimentacoes.subList(0, 10);
         }
 
+        List<ResumoCategoriaDTO> receitasPorCategoria =
+                gerarResumoPorCategoria(movimentacoes, "RECEITA", totalReceita);
+
+        List<ResumoCategoriaDTO> despesasPorCategoria =
+                gerarResumoPorCategoria(movimentacoes, "DESPESA", totalDespesa);
+
         Map<String, Object> response = new HashMap<>();
         response.put("receita", totalReceita);
         response.put("despesa", totalDespesa);
         response.put("saldoTotal", totalReceita - totalDespesa);
         response.put("transacoes", ultimasMovimentacoes);
+        response.put("receitasPorCategoria", receitasPorCategoria);
+        response.put("despesasPorCategoria", despesasPorCategoria);
 
         return response;
+    }
+
+    private List<ResumoCategoriaDTO> gerarResumoPorCategoria(
+            List<MovimentacaoDTO> movimentacoes,
+            String tipo,
+            Double total
+    ) {
+        Map<String, Double> agrupado = new LinkedHashMap<>();
+
+        movimentacoes.stream()
+                .filter(mov -> tipo.equalsIgnoreCase(mov.getTipo()))
+                .forEach(mov -> {
+                    String categoria = mov.getCategoria() != null && !mov.getCategoria().isBlank()
+                            ? mov.getCategoria()
+                            : "Sem categoria";
+
+                    Double valorAtual = agrupado.getOrDefault(categoria, 0.0);
+                    agrupado.put(categoria, valorAtual + mov.getValor());
+                });
+
+        return agrupado.entrySet()
+                .stream()
+                .map(entry -> {
+                    Double percentual = total > 0
+                            ? (entry.getValue() / total) * 100
+                            : 0.0;
+
+                    return new ResumoCategoriaDTO(
+                            entry.getKey(),
+                            entry.getValue(),
+                            percentual
+                    );
+                })
+                .toList();
     }
 }

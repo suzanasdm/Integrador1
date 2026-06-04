@@ -9,21 +9,31 @@ import java.time.LocalDate;
 @Table(name = "orcamentos")
 @Data
 public class Orcamento {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "valor_limite", nullable = false)
     private Double valorLimite;
-    private Double valorGasto; // Calculado dinamicamente ou atualizado via scheduler/trigger
-    private String mesAno; // Ex: "2026-05" (para controlar orçamentos mensais)
+
+    @Column(name = "valor_gasto")
+    private Double valorGasto;
+
+    @Column(name = "mes_ano", nullable = false)
+    private String mesAno;
+
+    @Column(name = "periodo_inicio", nullable = false)
+    private LocalDate periodoInicio;
+
+    @Column(name = "periodo_fim", nullable = false)
+    private LocalDate periodoFim;
 
     @ManyToOne
-    @JoinColumn(name = "usuario_id")
+    @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
     @ManyToOne
-    @JoinColumn(name = "categoria_id")
+    @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;
-
-    // Métodos: criarOrcamento(), editarOrcamento()
 }

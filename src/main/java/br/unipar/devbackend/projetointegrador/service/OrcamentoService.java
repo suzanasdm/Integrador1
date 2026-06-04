@@ -1,74 +1,175 @@
 package br.unipar.devbackend.projetointegrador.service;
 
+import br.unipar.devbackend.projetointegrador.dto.MovimentacaoDTO;
 import br.unipar.devbackend.projetointegrador.dto.OrcamentoDTO;
+import br.unipar.devbackend.projetointegrador.dto.OrcamentoResponseDTO;
 import br.unipar.devbackend.projetointegrador.model.Categoria;
+import br.unipar.devbackend.projetointegrador.model.CategoriaEnum;
 import br.unipar.devbackend.projetointegrador.model.Orcamento;
 import br.unipar.devbackend.projetointegrador.model.Usuario;
 import br.unipar.devbackend.projetointegrador.repository.CategoriaRepository;
-import br.unipar.devbackend.projetointegrador.repository.DespesaRepository;
 import br.unipar.devbackend.projetointegrador.repository.OrcamentoRepository;
 import br.unipar.devbackend.projetointegrador.repository.UsuarioRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.YearMonth;
 import java.util.List;
 
 @Service
 public class OrcamentoService {
 
     private final OrcamentoRepository orcamentoRepository;
-    private final DespesaRepository despesaRepository;
     private final UsuarioRepository usuarioRepository;
     private final CategoriaRepository categoriaRepository;
+    private final MovimentacaoService movimentacaoService;
 
-    // Construtor único para injeção automática via Spring (dispensa o @Autowired manual)
-    public OrcamentoService(OrcamentoRepository orcamentoRepository,
-                            DespesaRepository despesaRepository,
-                            UsuarioRepository usuarioRepository,
-                            CategoriaRepository categoriaRepository) {
+    public OrcamentoService(
+            OrcamentoRepository orcamentoRepository,
+            UsuarioRepository usuarioRepository,
+            CategoriaRepository categoriaRepository,
+            MovimentacaoService movimentacaoService
+    ) {
         this.orcamentoRepository = orcamentoRepository;
-        this.despesaRepository = despesaRepository;
         this.usuarioRepository = usuarioRepository;
         this.categoriaRepository = categoriaRepository;
+        this.movimentacaoService = movimentacaoService;
     }
 
-    /**
-     * Busca os orçamentos do usuário e calcula em tempo real o quanto
-     * já foi gasto baseado nas despesas registradas para aquela categoria.
-     */
-    public List<Orcamento> buscarPorUsuario(Long usuarioId) {
-        List<Orcamento> orcamentos = orcamentoRepository.findByUsuarioId(usuarioId);
+    public List<OrcamentoResponseDTO> buscarPorUsuario(Long usuarioId, String mesAno) {
+        String mesReferencia = mesAno != null && !mesAno.isBlank()
+                ? mesAno
+                : YearMonth.now().toString();
 
-        for (Orcamento o : orcamentos) {
-            // Se o seu DespesaRepository não tiver uma query nativa por mês ainda,
-            // você pode filtrar trazendo o total geral da categoria provisoriamente:
-            Double gasto = despesaRepository.somarTotalPorUsuarioECategoria(usuarioId, o.getCategoria().getId());
+        List<Orcamento> orcamentos =
+                orcamentoRepository.findByUsuarioIdAndMesAno(usuarioId, mesReferencia);
 
-            // Trata o retorno nulo para não quebrar o front-end
-            o.setValorGasto(gasto != null ? gasto : 0.0);
-        }
-
-        return orcamentos;
+        return orcamentos.stream()
+                .map(orcamento -> montarResponse(orcamento, usuarioId))
+                .toList();
     }
 
-    /**
-     * Salva um novo limite de orçamento para o usuário
-     */
     @Transactional
-    public Orcamento salvar(OrcamentoDTO dto) {
+    public OrcamentoResponseDTO salvar(OrcamentoDTO dto) {
+
+        validarMesAno(dto.getMesAno());
+
         Usuario usuario = usuarioRepository.findById(dto.getUsuarioId())
-                .orElseThrow(() -> new RuntimeException("Usuário não encontrado com o ID: " + dto.getUsuarioId()));
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
 
         Categoria categoria = categoriaRepository.findById(dto.getCategoriaId())
-                .orElseThrow(() -> new RuntimeException("Categoria não encontrada com o ID: " + dto.getCategoriaId()));
+                .orElseThrow(() -> new RuntimeException("Categoria não encontrada."));
 
-        Orcamento orcamento = new Orcamento();
+        validarCategoriaDoUsuario(categoria, usuario.getId());
+        validarCategoriaDespesa(categoria);
+
+        YearMonth yearMonth = YearMonth.parse(dto.getMesAno());
+
+        LocalDate periodoInicio = yearMonth.atDay(1);
+        LocalDate periodoFim = yearMonth.atEndOfMonth();
+
+        Orcamento orcamento = orcamentoRepository
+                .findByUsuarioIdAndCategoriaIdAndMesAno(
+                        usuario.getId(),
+                        categoria.getId(),
+                        dto.getMesAno()
+                )
+                .orElse(new Orcamento());
+
         orcamento.setValorLimite(dto.getValorLimite());
+        orcamento.setValorGasto(0.0);
         orcamento.setMesAno(dto.getMesAno());
+        orcamento.setPeriodoInicio(periodoInicio);
+        orcamento.setPeriodoFim(periodoFim);
         orcamento.setUsuario(usuario);
         orcamento.setCategoria(categoria);
-        orcamento.setValorGasto(0.0); // O valor real gasto é calculado dinamicamente no método buscar
 
-        return orcamentoRepository.save(orcamento);
+        Orcamento salvo = orcamentoRepository.save(orcamento);
+
+        return montarResponse(salvo, usuario.getId());
+    }
+
+    private OrcamentoResponseDTO montarResponse(Orcamento orcamento, Long usuarioId) {
+        Double valorGasto = calcularValorGasto(
+                usuarioId,
+                orcamento.getCategoria().getId(),
+                orcamento.getMesAno()
+        );
+
+        Double valorLimite = orcamento.getValorLimite() != null
+                ? orcamento.getValorLimite()
+                : 0.0;
+
+        Double valorRestante = valorLimite - valorGasto;
+
+        Double percentualUsado = valorLimite > 0
+                ? (valorGasto / valorLimite) * 100
+                : 0.0;
+
+        String status;
+
+        if (valorGasto > valorLimite) {
+            status = "ULTRAPASSADO";
+        } else if (percentualUsado >= 80) {
+            status = "ATENCAO";
+        } else {
+            status = "DENTRO_DO_LIMITE";
+        }
+
+        return new OrcamentoResponseDTO(
+                orcamento.getId(),
+                orcamento.getCategoria().getId(),
+                orcamento.getCategoria().getNome(),
+                orcamento.getMesAno(),
+                valorLimite,
+                valorGasto,
+                valorRestante,
+                percentualUsado,
+                status
+        );
+    }
+
+    private Double calcularValorGasto(Long usuarioId, Long categoriaId, String mesAno) {
+        YearMonth yearMonth = YearMonth.parse(mesAno);
+
+        LocalDate inicio = yearMonth.atDay(1);
+        LocalDate fim = yearMonth.atEndOfMonth();
+
+        List<MovimentacaoDTO> movimentacoes =
+                movimentacaoService.listarPorUsuario(usuarioId);
+
+        return movimentacoes.stream()
+                .filter(mov -> "DESPESA".equalsIgnoreCase(mov.getTipo()))
+                .filter(mov -> mov.getCategoriaId() != null)
+                .filter(mov -> mov.getCategoriaId().equals(categoriaId))
+                .filter(mov -> {
+                    LocalDate data = mov.getData().toLocalDate();
+
+                    return !data.isBefore(inicio)
+                            && !data.isAfter(fim);
+                })
+                .mapToDouble(MovimentacaoDTO::getValor)
+                .sum();
+    }
+
+    private void validarCategoriaDoUsuario(Categoria categoria, Long usuarioId) {
+        if (categoria.getUsuario() == null || !categoria.getUsuario().getId().equals(usuarioId)) {
+            throw new RuntimeException("A categoria não pertence ao usuário informado.");
+        }
+    }
+
+    private void validarCategoriaDespesa(Categoria categoria) {
+        if (categoria.getTipo() != CategoriaEnum.DESPESA) {
+            throw new RuntimeException("Orçamentos devem ser configurados apenas para categorias de DESPESA.");
+        }
+    }
+
+    private void validarMesAno(String mesAno) {
+        try {
+            YearMonth.parse(mesAno);
+        } catch (Exception e) {
+            throw new RuntimeException("O mês de vigência deve estar no formato YYYY-MM.");
+        }
     }
 }

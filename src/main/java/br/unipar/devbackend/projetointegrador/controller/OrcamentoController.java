@@ -1,9 +1,9 @@
 package br.unipar.devbackend.projetointegrador.controller;
 
 import br.unipar.devbackend.projetointegrador.dto.OrcamentoDTO;
-import br.unipar.devbackend.projetointegrador.model.Orcamento;
+import br.unipar.devbackend.projetointegrador.dto.OrcamentoResponseDTO;
 import br.unipar.devbackend.projetointegrador.service.OrcamentoService;
-import org.springframework.beans.factory.annotation.Autowired;
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,21 +14,26 @@ import java.util.List;
 @CrossOrigin(origins = "*")
 public class OrcamentoController {
 
-    @Autowired
-    private OrcamentoService orcamentoService;
+    private final OrcamentoService orcamentoService;
 
-    // GET: http://localhost:8080/api/orcamentos/usuario/{id}
+    public OrcamentoController(OrcamentoService orcamentoService) {
+        this.orcamentoService = orcamentoService;
+    }
+
     @GetMapping("/usuario/{usuarioId}")
-    public ResponseEntity<List<Orcamento>> buscarPorUsuario(@PathVariable Long usuarioId) {
-        List<Orcamento> orcamentos = orcamentoService.buscarPorUsuario(usuarioId);
-        return ResponseEntity.ok(orcamentos);
+    public ResponseEntity<List<OrcamentoResponseDTO>> buscarPorUsuario(
+            @PathVariable Long usuarioId,
+            @RequestParam(required = false) String mesAno
+    ) {
+        return ResponseEntity.ok(
+                orcamentoService.buscarPorUsuario(usuarioId, mesAno)
+        );
     }
 
-    // POST: http://localhost:8080/api/orcamentos
     @PostMapping
-    public ResponseEntity<Orcamento> salvar(@RequestBody OrcamentoDTO dto) {
-        Orcamento novoOrcamento = orcamentoService.salvar(dto);
-        return ResponseEntity.ok(novoOrcamento);
+    public ResponseEntity<OrcamentoResponseDTO> salvar(
+            @Valid @RequestBody OrcamentoDTO dto
+    ) {
+        return ResponseEntity.ok(orcamentoService.salvar(dto));
     }
-
 }
