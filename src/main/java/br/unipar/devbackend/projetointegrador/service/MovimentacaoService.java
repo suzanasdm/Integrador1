@@ -33,16 +33,17 @@ public class MovimentacaoService {
 
         for(Receita receita : receitas){
             movimentacoes.add(new MovimentacaoDTO(
-                    receita.getId(),
-                    receita.getData().atStartOfDay(),
-                    receita.getDescricao(),
-                    "RECEITA",
-                    Math.abs(receita.getValor()),
-                    receita.getCategoria() != null ? receita.getCategoria().getNome() : "Sem categoria",
-                    receita.getCategoria() != null ? receita.getCategoria().getId() : null,
-                    receita.getConta() != null ? receita.getConta().getBanco().name() : "Sem conta",
-                    receita.getConta() != null ? receita.getConta().getId() : null,
-                    "MANUAL"
+                            receita.getId(),
+                            receita.getData().atStartOfDay(),
+                            receita.getDescricao(),
+                            "RECEITA",
+                            Math.abs(receita.getValor()),
+                            receita.getCategoria() != null ? receita.getCategoria().getNome() : "Sem categoria",
+                            receita.getCategoria() != null ? receita.getCategoria().getId() : null,
+                            receita.getConta() != null ? receita.getConta().getBanco().name() : "Sem conta",
+                            receita.getConta() != null ? receita.getConta().getId() : null,
+                            "MANUAL"
+
             ));
         }
         for (Despesa despesa : despesas) {
