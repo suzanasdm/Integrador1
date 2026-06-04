@@ -1,18 +1,16 @@
 package br.unipar.devbackend.projetointegrador.controller;
 
+import br.unipar.devbackend.projetointegrador.dto.LoginDTO;
 import br.unipar.devbackend.projetointegrador.dto.UsuarioDTO;
+import br.unipar.devbackend.projetointegrador.dto.UsuarioResponseDTO;
 import br.unipar.devbackend.projetointegrador.model.Usuario;
 import br.unipar.devbackend.projetointegrador.service.UsuarioService;
-
 import jakarta.validation.Valid;
-
-import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/usuarios")
-
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
@@ -22,62 +20,44 @@ public class UsuarioController {
     }
 
     @PostMapping
-    public ResponseEntity<?> cadastrarUsuario(
-            @Valid @RequestBody UsuarioDTO dto) {
+    public ResponseEntity<UsuarioResponseDTO> cadastrarUsuario(
+            @Valid @RequestBody UsuarioDTO dto
+    ) {
+        Usuario usuario = new Usuario();
+        usuario.setNome(dto.getNome());
+        usuario.setEmail(dto.getEmail());
+        usuario.setSenha(dto.getSenha());
 
-        try {
+        Usuario novoUsuario = usuarioService.cadastrar(usuario);
 
-            Usuario usuario = new Usuario();
-            usuario.setNome(dto.getNome());
-            usuario.setEmail(dto.getEmail());
-            usuario.setSenha(dto.getSenha());
-
-            Usuario novoUsuario =
-                    usuarioService.cadastrar(usuario);
-
-            return ResponseEntity.ok(novoUsuario);
-
-        } catch (Exception e) {
-
-            return ResponseEntity.badRequest()
-                    .body(e.getMessage());
-        }
+        return ResponseEntity.ok(toResponseDTO(novoUsuario));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<?> login(
-            @RequestBody UsuarioDTO usuario) {
+    public ResponseEntity<UsuarioResponseDTO> login(
+            @Valid @RequestBody LoginDTO loginDTO
+    ) {
+        Usuario usuarioLogado = usuarioService.login(
+                loginDTO.getEmail(),
+                loginDTO.getSenha()
+        );
 
-        try {
-
-            Usuario usuarioLogado =
-                    usuarioService.login(
-                            usuario.getEmail(),
-                            usuario.getSenha()
-                    );
-
-            return ResponseEntity.ok(usuarioLogado);
-
-        } catch (Exception e) {
-
-            return ResponseEntity.status(401)
-                    .body(e.getMessage());
-        }
+        return ResponseEntity.ok(toResponseDTO(usuarioLogado));
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<?> buscar(
-            @PathVariable Long id) {
+    public ResponseEntity<UsuarioResponseDTO> buscar(@PathVariable Long id) {
+        Usuario usuario = usuarioService.buscarPorId(id);
 
-        try {
-            return ResponseEntity.ok(
-                    usuarioService.buscarPorId(id)
-            );
+        return ResponseEntity.ok(toResponseDTO(usuario));
+    }
 
-        } catch (RuntimeException e) {
-
-            return ResponseEntity.notFound().build();
-        }
+    private UsuarioResponseDTO toResponseDTO(Usuario usuario) {
+        return new UsuarioResponseDTO(
+                usuario.getId(),
+                usuario.getNome(),
+                usuario.getEmail(),
+                usuario.getDataCadastro()
+        );
     }
 }
-

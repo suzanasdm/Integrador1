@@ -11,6 +11,12 @@ public class OpenApiConfig {
 
     @Bean
     public OpenAPI customOpenAPI() {
-        return new OpenAPI().info(new Info().title("Projeto sofredor Unipar").version("1.0").description("API para gerenciamento de alunos, disciplinas e aulas"));
+        return new OpenAPI()
+                .info(
+                        new Info()
+                                .title("CyberSoft API")
+                                .version("1.0")
+                                .description("API para gestão financeira pessoal")
+                );
     }
 }

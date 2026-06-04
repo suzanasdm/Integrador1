@@ -11,14 +11,14 @@ import java.time.LocalDateTime;
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
-    private final PasswordEncoder encoder;
+    private final PasswordEncoder passwordEncoder;
 
     public UsuarioService(
             UsuarioRepository usuarioRepository,
-            PasswordEncoder encoder) {
-
+            PasswordEncoder passwordEncoder
+    ) {
         this.usuarioRepository = usuarioRepository;
-        this.encoder = encoder;
+        this.passwordEncoder = passwordEncoder;
     }
 
     public Usuario cadastrar(Usuario usuario) {
@@ -27,50 +27,26 @@ public class UsuarioService {
             throw new RuntimeException("Email já cadastrado!");
         }
 
-        if (!validarSenha(usuario.getSenha())) {
-            throw new RuntimeException(
-                    "Senha deve conter no mínimo 8 caracteres, letra maiúscula, número e caractere especial."
-            );
-        }
-
-        usuario.setSenha(
-                encoder.encode(usuario.getSenha())
-        );
-
+        usuario.setSenha(passwordEncoder.encode(usuario.getSenha()));
         usuario.setDataCadastro(LocalDateTime.now());
 
         return usuarioRepository.save(usuario);
     }
 
-    public Usuario login(String email, String senhaDigitada) {
+    public Usuario login(String email, String senha) {
 
         Usuario usuario = usuarioRepository.findByEmail(email)
-                .orElseThrow(() ->
-                        new RuntimeException("Usuário não encontrado"));
+                .orElseThrow(() -> new RuntimeException("Email ou senha inválidos."));
 
-        if (!encoder.matches(senhaDigitada, usuario.getSenha())) {
-            throw new RuntimeException("Senha inválida");
+        if (!passwordEncoder.matches(senha, usuario.getSenha())) {
+            throw new RuntimeException("Email ou senha inválidos.");
         }
-
-        usuario.setSenha(null); // não expõe hash
 
         return usuario;
     }
 
     public Usuario buscarPorId(Long id) {
         return usuarioRepository.findById(id)
-                .orElseThrow(() ->
-                        new RuntimeException("Usuário não encontrado"));
-    }
-
-    private boolean validarSenha(String senha) {
-
-        if (senha == null) return false;
-
-        String regex =
-                "^(?=.*[A-Z])(?=.*\\d)(?=.*[@#$%^&+=!])(?=\\S+$).{8,}$";
-
-        return senha.matches(regex);
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
     }
 }
-

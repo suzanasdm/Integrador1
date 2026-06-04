@@ -28,27 +28,35 @@ public class CategoriaDTO {
         this.usuarioId = usuarioId;
     }
 
-    public String getNome() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public @NotBlank(message = "O nome da categoria é obrigatória") String getNome() {
         return nome;
     }
 
-    public void setNome(String nome) {
+    public void setNome(@NotBlank(message = "O nome da categoria é obrigatória") String nome) {
         this.nome = nome;
     }
 
-    public CategoriaEnum getTipo() {
+    public @NotNull(message = "O tipo (RECEITA/DESPESA) é obrigatório") CategoriaEnum getTipo() {
         return tipo;
     }
 
-    public void setTipo(CategoriaEnum tipo) {
+    public void setTipo(@NotNull(message = "O tipo (RECEITA/DESPESA) é obrigatório") CategoriaEnum tipo) {
         this.tipo = tipo;
     }
 
-    public Long getUsuarioId() {
+    public @NotNull(message = "O ID do utilizador é obrigatório") Long getUsuarioId() {
         return usuarioId;
     }
 
-    public void setUsuarioId(Long usuarioId) {
+    public void setUsuarioId(@NotNull(message = "O ID do utilizador é obrigatório") Long usuarioId) {
         this.usuarioId = usuarioId;
     }
 }

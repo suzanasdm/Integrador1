@@ -1,16 +1,12 @@
 package br.unipar.devbackend.projetointegrador.controller;
 
-import br.unipar.devbackend.projetointegrador.dto.DashboardTransacaoDTO;
-import br.unipar.devbackend.projetointegrador.model.Despesa;
-import br.unipar.devbackend.projetointegrador.model.Receita;
-import br.unipar.devbackend.projetointegrador.service.DespesaService;
-import br.unipar.devbackend.projetointegrador.service.ReceitaService;
-import org.springframework.beans.factory.annotation.Autowired;
+import br.unipar.devbackend.projetointegrador.dto.MovimentacaoDTO;
+import br.unipar.devbackend.projetointegrador.dto.ResumoCategoriaDTO;
+import br.unipar.devbackend.projetointegrador.service.MovimentacaoService;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -19,61 +15,82 @@ import java.util.Map;
 @CrossOrigin(origins = "*")
 public class DashboardController {
 
-    @Autowired
-    private ReceitaService receitaService;
+    private final MovimentacaoService movimentacaoService;
 
-    @Autowired
-    private DespesaService despesaService;
+    public DashboardController(MovimentacaoService movimentacaoService) {
+        this.movimentacaoService = movimentacaoService;
+    }
 
     @GetMapping("/{usuarioId}")
     public Map<String, Object> getResumo(@PathVariable Long usuarioId) {
 
-        Double totalReceita = receitaService.getTotalReceitas(usuarioId);
-        Double totalDespesa = despesaService.getTotalDespesas(usuarioId);
+        List<MovimentacaoDTO> movimentacoes =
+                movimentacaoService.listarPorUsuario(usuarioId);
 
-        List<Receita> receitas = receitaService.listarPorUsuario(usuarioId);
-        List<Despesa> despesas = despesaService.buscarPorUsuario(usuarioId);
+        Double totalReceita = movimentacoes.stream()
+                .filter(mov -> "RECEITA".equalsIgnoreCase(mov.getTipo()))
+                .mapToDouble(MovimentacaoDTO::getValor)
+                .sum();
 
-        List<DashboardTransacaoDTO> transacoes = new ArrayList<>();
+        Double totalDespesa = movimentacoes.stream()
+                .filter(mov -> "DESPESA".equalsIgnoreCase(mov.getTipo()))
+                .mapToDouble(MovimentacaoDTO::getValor)
+                .sum();
 
-        for (Receita receita : receitas) {
-            transacoes.add(
-                    new DashboardTransacaoDTO(
-                            receita.getData(),
-                            receita.getDescricao(),
-                            receita.getCategoria() != null ? receita.getCategoria().getNome() : "Sem categoria",
-                            "RECEITA",
-                            receita.getValor()
-                    )
-            );
+        List<MovimentacaoDTO> ultimasMovimentacoes = movimentacoes;
+
+        if (ultimasMovimentacoes.size() > 10) {
+            ultimasMovimentacoes = ultimasMovimentacoes.subList(0, 10);
         }
 
-        for (Despesa despesa : despesas) {
-            transacoes.add(
-                    new DashboardTransacaoDTO(
-                            despesa.getData(),
-                            despesa.getDescricao(),
-                            despesa.getCategoria() != null ? despesa.getCategoria().getNome() : "Sem categoria",
-                            "DESPESA",
-                            despesa.getValor()
-                    )
-            );
-        }
+        List<ResumoCategoriaDTO> receitasPorCategoria =
+                gerarResumoPorCategoria(movimentacoes, "RECEITA", totalReceita);
 
-        transacoes.sort(
-                Comparator.comparing(DashboardTransacaoDTO::getData).reversed()
-        );
-
-        if (transacoes.size() > 10) {
-            transacoes = transacoes.subList(0, 10);
-        }
+        List<ResumoCategoriaDTO> despesasPorCategoria =
+                gerarResumoPorCategoria(movimentacoes, "DESPESA", totalDespesa);
 
         Map<String, Object> response = new HashMap<>();
         response.put("receita", totalReceita);
         response.put("despesa", totalDespesa);
         response.put("saldoTotal", totalReceita - totalDespesa);
-        response.put("transacoes", transacoes);
+        response.put("transacoes", ultimasMovimentacoes);
+        response.put("receitasPorCategoria", receitasPorCategoria);
+        response.put("despesasPorCategoria", despesasPorCategoria);
 
         return response;
+    }
+
+    private List<ResumoCategoriaDTO> gerarResumoPorCategoria(
+            List<MovimentacaoDTO> movimentacoes,
+            String tipo,
+            Double total
+    ) {
+        Map<String, Double> agrupado = new LinkedHashMap<>();
+
+        movimentacoes.stream()
+                .filter(mov -> tipo.equalsIgnoreCase(mov.getTipo()))
+                .forEach(mov -> {
+                    String categoria = mov.getCategoria() != null && !mov.getCategoria().isBlank()
+                            ? mov.getCategoria()
+                            : "Sem categoria";
+
+                    Double valorAtual = agrupado.getOrDefault(categoria, 0.0);
+                    agrupado.put(categoria, valorAtual + mov.getValor());
+                });
+
+        return agrupado.entrySet()
+                .stream()
+                .map(entry -> {
+                    Double percentual = total > 0
+                            ? (entry.getValue() / total) * 100
+                            : 0.0;
+
+                    return new ResumoCategoriaDTO(
+                            entry.getKey(),
+                            entry.getValue(),
+                            percentual
+                    );
+                })
+                .toList();
     }
 }
