@@ -1,31 +1,49 @@
 package br.unipar.devbackend.projetointegrador.service;
 
 import br.unipar.devbackend.projetointegrador.model.ContaBancaria;
+import br.unipar.devbackend.projetointegrador.model.Usuario;
 import br.unipar.devbackend.projetointegrador.repository.ContaBancariaRepository;
 import br.unipar.devbackend.projetointegrador.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
 import java.util.List;
 
 @Service
 public class ContaBancariaService {
 
-    @Autowired
-    private ContaBancariaRepository contaBancariaRepository;
+    private final ContaBancariaRepository contaBancariaRepository;
+    private final UsuarioRepository usuarioRepository;
 
-    @Autowired
-    private UsuarioRepository usuarioRepository;
+    public ContaBancariaService(
+            ContaBancariaRepository contaBancariaRepository,
+            UsuarioRepository usuarioRepository
+    ) {
+        this.contaBancariaRepository = contaBancariaRepository;
+        this.usuarioRepository = usuarioRepository;
+    }
 
-    // Método para buscar as contas de um usuário específico
     public List<ContaBancaria> buscarPorUsuario(Long usuarioId) {
         return contaBancariaRepository.findByUsuarioId(usuarioId);
     }
 
-    // Seu método de cadastro já existente
     public ContaBancaria cadastrar(ContaBancaria conta, Long usuarioId) {
-        return usuarioRepository.findById(usuarioId).map(usuario -> {
-            conta.setUsuario(usuario);
-            return contaBancariaRepository.save(conta);
-        }).orElseThrow(() -> new RuntimeException("Usuário não encontrado!"));
+        Usuario usuario = usuarioRepository.findById(usuarioId)
+                .orElseThrow(() -> new RuntimeException("Usuário não encontrado."));
+
+        conta.setUsuario(usuario);
+
+        if (conta.getSaldo() == null) {
+            conta.setSaldo(0.0);
+        }
+
+        return contaBancariaRepository.save(conta);
+    }
+
+    public Double somarSaldoTotalPorUsuario(Long usuarioId) {
+        List<ContaBancaria> contas = contaBancariaRepository.findByUsuarioId(usuarioId);
+
+        return contas.stream()
+                .mapToDouble(conta -> conta.getSaldo() != null ? conta.getSaldo() : 0.0)
+                .sum();
     }
 }

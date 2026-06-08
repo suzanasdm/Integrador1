@@ -2,6 +2,7 @@ package br.unipar.devbackend.projetointegrador.controller;
 
 import br.unipar.devbackend.projetointegrador.dto.MovimentacaoDTO;
 import br.unipar.devbackend.projetointegrador.dto.ResumoCategoriaDTO;
+import br.unipar.devbackend.projetointegrador.service.ContaBancariaService;
 import br.unipar.devbackend.projetointegrador.service.MovimentacaoService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,9 +17,14 @@ import java.util.Map;
 public class DashboardController {
 
     private final MovimentacaoService movimentacaoService;
+    private final ContaBancariaService contaBancariaService;
 
-    public DashboardController(MovimentacaoService movimentacaoService) {
+    public DashboardController(
+            MovimentacaoService movimentacaoService,
+            ContaBancariaService contaBancariaService
+    ) {
         this.movimentacaoService = movimentacaoService;
+        this.contaBancariaService = contaBancariaService;
     }
 
     @GetMapping("/{usuarioId}")
@@ -37,6 +43,11 @@ public class DashboardController {
                 .mapToDouble(MovimentacaoDTO::getValor)
                 .sum();
 
+        Double saldoMovimentacoes = totalReceita - totalDespesa;
+
+        Double saldoTotalContas =
+                contaBancariaService.somarSaldoTotalPorUsuario(usuarioId);
+
         List<MovimentacaoDTO> ultimasMovimentacoes = movimentacoes;
 
         if (ultimasMovimentacoes.size() > 10) {
@@ -50,9 +61,16 @@ public class DashboardController {
                 gerarResumoPorCategoria(movimentacoes, "DESPESA", totalDespesa);
 
         Map<String, Object> response = new HashMap<>();
+
         response.put("receita", totalReceita);
         response.put("despesa", totalDespesa);
-        response.put("saldoTotal", totalReceita - totalDespesa);
+
+
+        response.put("saldoTotal", saldoTotalContas);
+
+
+        response.put("saldoMovimentacoes", saldoMovimentacoes);
+
         response.put("transacoes", ultimasMovimentacoes);
         response.put("receitasPorCategoria", receitasPorCategoria);
         response.put("despesasPorCategoria", despesasPorCategoria);
