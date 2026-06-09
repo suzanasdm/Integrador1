@@ -3,7 +3,8 @@ package br.unipar.devbackend.projetointegrador.repository;
 
 import br.unipar.devbackend.projetointegrador.model.CategoriaEnum;
 import br.unipar.devbackend.projetointegrador.model.Transacao;
-
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
@@ -13,25 +14,25 @@ import java.util.List;
 
 public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
 
-    // VERIFICA SE A TRANSAÇÃO OFX JÁ EXISTE
+
     boolean existsByFitIdAndContaId(
             String fitId,
             Long contaId
     );
 
-    // LISTAR TRANSAÇÕES DO USUÁRIO
+
     List<Transacao> findByUsuarioIdOrderByDataDesc(
             Long usuarioId
     );
 
-    // FILTRO POR PERÍODO
+
     List<Transacao> findByUsuarioIdAndDataBetweenOrderByDataDesc(
             Long usuarioId,
             LocalDateTime inicio,
             LocalDateTime fim
     );
 
-    // RELATÓRIO DE GASTOS POR CATEGORIA
+
     @Query("""
         SELECT
             COALESCE(t.categoria.nome, 'Sem categoria'),
@@ -47,7 +48,7 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
             @Param("tipo") CategoriaEnum tipo
     );
 
-    // SOMA TOTAL POR TIPO
+
     @Query("""
         SELECT COALESCE(SUM(t.valor), 0)
         FROM Transacao t
@@ -59,7 +60,7 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
             @Param("tipo") CategoriaEnum tipo
     );
 
-    // BUSCAR TRANSAÇÕES PARA RELATÓRIO COM FILTRO
+
     @Query("""
         SELECT t
         FROM Transacao t
@@ -76,4 +77,9 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
             @Param("inicio") LocalDateTime inicio,
             @Param("fim") LocalDateTime fim
     );
+    List<Transacao> findByArquivoOfxId(Long arquivoOfxId);
+
+    @Transactional
+    @Modifying
+    void deleteByArquivoOfxId(Long arquivoOfxId);
 }

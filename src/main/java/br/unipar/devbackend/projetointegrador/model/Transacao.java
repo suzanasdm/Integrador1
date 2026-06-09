@@ -24,6 +24,11 @@ public class Transacao {
     @Column(nullable = false)
     private Double valor ;
 
+    @ManyToOne
+    @JoinColumn(name = "ofx_arquivo_id")
+    private OfxArquivo arquivoOfx;
+
+
 
     private LocalDateTime data;
 

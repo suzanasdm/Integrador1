@@ -8,12 +8,13 @@ import com.webcohesion.ofx4j.domain.data.banking.BankingResponseMessageSet;
 import com.webcohesion.ofx4j.io.AggregateUnmarshaller;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.DigestUtils; // Biblioteca nativa do Spring para MD5
+import org.springframework.util.DigestUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.InputStreamReader;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.List;
 
 @Service
 public class OfxService {
@@ -21,7 +22,7 @@ public class OfxService {
     private final TransacaoRepository transacaoRepository;
     private final ContaBancariaRepository contaBancariaRepository;
     private final CategoriaRepository categoriaRepository;
-    private final OfxArquivoRepository ofxArquivoRepository; // Adicionado
+    private final OfxArquivoRepository ofxArquivoRepository;
 
     public OfxService(
             TransacaoRepository transacaoRepository,
@@ -42,7 +43,6 @@ public class OfxService {
             Long usuarioId
     ) throws Exception {
 
-        // 1. Verificação de Segurança de Conta
         ContaBancaria conta = contaBancariaRepository.findById(contaId)
                 .orElseThrow(() -> new RuntimeException("Conta não encontrada."));
 
@@ -50,13 +50,20 @@ public class OfxService {
             throw new RuntimeException("Esta conta bancária não pertence ao usuário logado.");
         }
 
-        // 2. NOVO: Validação do Arquivo Único (Hash MD5)
         String hashMd5 = DigestUtils.md5DigestAsHex(file.getBytes());
+
         if (ofxArquivoRepository.existsByHashMd5AndUsuarioId(hashMd5, usuarioId)) {
             throw new RuntimeException("Este arquivo OFX já foi importado anteriormente.");
         }
 
-        // 3. Processamento do OFX padrão
+        OfxArquivo arquivo = new OfxArquivo();
+        arquivo.setHashMd5(hashMd5);
+        arquivo.setNomeArquivo(file.getOriginalFilename());
+        arquivo.setDataUpload(LocalDateTime.now());
+        arquivo.setUsuario(conta.getUsuario());
+
+        final OfxArquivo arquivoSalvo = ofxArquivoRepository.save(arquivo);
+
         AggregateUnmarshaller<ResponseEnvelope> unmarshaller =
                 new AggregateUnmarshaller<>(ResponseEnvelope.class);
 
@@ -85,7 +92,6 @@ public class OfxService {
                                 fitId = tx.getDatePosted().getTime() + "-" + tx.getAmount();
                             }
 
-                            // Segurança extra por linha (mantida do seu código)
                             if (transacaoRepository.existsByFitIdAndContaId(fitId, conta.getId())) {
                                 return;
                             }
@@ -114,18 +120,7 @@ public class OfxService {
                             transacao.setUsuario(conta.getUsuario());
                             transacao.setTipo(tipo);
                             transacao.setCategoria(categoriaPadrao);
-
-                            transacao.setData(
-                                    tx.getDatePosted()
-                                            .toInstant()
-                                            .atZone(ZoneId.systemDefault())
-                                            .toLocalDateTime()
-                            );
-
-                            transacao.setConta(conta);
-                            transacao.setUsuario(conta.getUsuario());
-                            transacao.setTipo(tipo);
-                            transacao.setCategoria(categoriaPadrao);
+                            transacao.setArquivoOfx(arquivoSalvo);
 
                             transacao.setData(
                                     tx.getDatePosted()
@@ -138,29 +133,49 @@ public class OfxService {
                         });
             });
         }
-
-        // 4. NOVO: Salva o registro do arquivo para impedir re-uploads futuros
-        OfxArquivo arquivoRegistro = new OfxArquivo();
-        arquivoRegistro.setHashMd5(hashMd5);
-        arquivoRegistro.setNomeArquivo(file.getOriginalFilename());
-        arquivoRegistro.setDataUpload(LocalDateTime.now());
-        arquivoRegistro.setUsuario(conta.getUsuario());
-
-        ofxArquivoRepository.save(arquivoRegistro);
     }
 
-    private Categoria buscarOuCriarCategoriaPadrao(Long usuarioId, CategoriaEnum tipo) {
-        String nomeCategoria = tipo == CategoriaEnum.RECEITA ? "OFX - Receita" : "OFX - Despesa";
+    public List<OfxArquivo> listarArquivosPorUsuario(Long usuarioId) {
+        return ofxArquivoRepository.findByUsuarioIdOrderByDataUploadDesc(usuarioId);
+    }
+
+    @Transactional
+    public void excluirArquivo(Long arquivoId, Long usuarioId) {
+        OfxArquivo arquivo = ofxArquivoRepository.findById(arquivoId)
+                .orElseThrow(() -> new RuntimeException("Arquivo OFX não encontrado."));
+
+        if (arquivo.getUsuario() == null || !arquivo.getUsuario().getId().equals(usuarioId)) {
+            throw new RuntimeException("Este arquivo OFX não pertence ao usuário informado.");
+        }
+
+        transacaoRepository.deleteByArquivoOfxId(arquivoId);
+
+        ofxArquivoRepository.delete(arquivo);
+    }
+
+    private Categoria buscarOuCriarCategoriaPadrao(
+            Long usuarioId,
+            CategoriaEnum tipo
+    ) {
+        String nomeCategoria =
+                tipo == CategoriaEnum.RECEITA
+                        ? "OFX - Receita"
+                        : "OFX - Despesa";
 
         return categoriaRepository
-                .findByUsuarioIdAndTipoAndNomeIgnoreCase(usuarioId, tipo, nomeCategoria)
+                .findByUsuarioIdAndTipoAndNomeIgnoreCase(
+                        usuarioId,
+                        tipo,
+                        nomeCategoria
+                )
                 .orElseGet(() -> {
                     Categoria categoria = new Categoria();
                     categoria.setNome(nomeCategoria);
                     categoria.setTipo(tipo);
 
-                    var usuario = new br.unipar.devbackend.projetointegrador.model.Usuario();
+                    Usuario usuario = new Usuario();
                     usuario.setId(usuarioId);
+
                     categoria.setUsuario(usuario);
 
                     return categoriaRepository.save(categoria);
