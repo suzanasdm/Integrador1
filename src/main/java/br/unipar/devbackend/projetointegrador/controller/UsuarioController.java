@@ -1,9 +1,11 @@
 package br.unipar.devbackend.projetointegrador.controller;
 
 import br.unipar.devbackend.projetointegrador.dto.LoginDTO;
+import br.unipar.devbackend.projetointegrador.dto.LoginResponseDTO;
 import br.unipar.devbackend.projetointegrador.dto.UsuarioDTO;
 import br.unipar.devbackend.projetointegrador.dto.UsuarioResponseDTO;
 import br.unipar.devbackend.projetointegrador.model.Usuario;
+import br.unipar.devbackend.projetointegrador.security.JwtService;
 import br.unipar.devbackend.projetointegrador.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -11,12 +13,18 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api/usuarios")
+@CrossOrigin(origins = "*")
 public class UsuarioController {
 
     private final UsuarioService usuarioService;
+    private final JwtService jwtService;
 
-    public UsuarioController(UsuarioService usuarioService) {
+    public UsuarioController(
+            UsuarioService usuarioService,
+            JwtService jwtService
+    ) {
         this.usuarioService = usuarioService;
+        this.jwtService = jwtService;
     }
 
     @PostMapping
@@ -34,7 +42,7 @@ public class UsuarioController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<UsuarioResponseDTO> login(
+    public ResponseEntity<LoginResponseDTO> login(
             @Valid @RequestBody LoginDTO loginDTO
     ) {
         Usuario usuarioLogado = usuarioService.login(
@@ -42,7 +50,17 @@ public class UsuarioController {
                 loginDTO.getSenha()
         );
 
-        return ResponseEntity.ok(toResponseDTO(usuarioLogado));
+        String token = jwtService.gerarToken(usuarioLogado);
+
+        LoginResponseDTO response = new LoginResponseDTO(
+                usuarioLogado.getId(),
+                usuarioLogado.getNome(),
+                usuarioLogado.getEmail(),
+                usuarioLogado.getDataCadastro(),
+                token
+        );
+
+        return ResponseEntity.ok(response);
     }
 
     @GetMapping("/{id}")
