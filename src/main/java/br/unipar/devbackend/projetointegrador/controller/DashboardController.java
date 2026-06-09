@@ -2,8 +2,11 @@ package br.unipar.devbackend.projetointegrador.controller;
 
 import br.unipar.devbackend.projetointegrador.dto.MovimentacaoDTO;
 import br.unipar.devbackend.projetointegrador.dto.ResumoCategoriaDTO;
+import br.unipar.devbackend.projetointegrador.model.Usuario;
 import br.unipar.devbackend.projetointegrador.service.ContaBancariaService;
 import br.unipar.devbackend.projetointegrador.service.MovimentacaoService;
+import br.unipar.devbackend.projetointegrador.service.UsuarioService;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.HashMap;
@@ -18,17 +21,56 @@ public class DashboardController {
 
     private final MovimentacaoService movimentacaoService;
     private final ContaBancariaService contaBancariaService;
+    private final UsuarioService usuarioService;
 
     public DashboardController(
             MovimentacaoService movimentacaoService,
-            ContaBancariaService contaBancariaService
+            ContaBancariaService contaBancariaService,
+            UsuarioService usuarioService
     ) {
         this.movimentacaoService = movimentacaoService;
         this.contaBancariaService = contaBancariaService;
+        this.usuarioService = usuarioService;
     }
+
+    @GetMapping("/me")
+    public Map<String, Object> getResumoUsuarioLogado(Authentication authentication) {
+
+        if (authentication == null || authentication.getPrincipal() == null) {
+            throw new RuntimeException("Usuário não autenticado.");
+        }
+
+        Object principal = authentication.getPrincipal();
+
+        Long usuarioId;
+
+
+        if (principal instanceof Usuario usuario) {
+            usuarioId = usuario.getId();
+        }
+
+
+        else if (principal instanceof String email) {
+            Usuario usuario = usuarioService.buscarPorEmail(email);
+            usuarioId = usuario.getId();
+        }
+
+
+        else {
+            throw new RuntimeException("Não foi possível identificar o usuário autenticado.");
+        }
+
+        return montarResumo(usuarioId);
+    }
+
 
     @GetMapping("/{usuarioId}")
     public Map<String, Object> getResumo(@PathVariable Long usuarioId) {
+        return montarResumo(usuarioId);
+    }
+
+
+    private Map<String, Object> montarResumo(Long usuarioId) {
 
         List<MovimentacaoDTO> movimentacoes =
                 movimentacaoService.listarPorUsuario(usuarioId);
@@ -64,13 +106,8 @@ public class DashboardController {
 
         response.put("receita", totalReceita);
         response.put("despesa", totalDespesa);
-
-
         response.put("saldoTotal", saldoTotalContas);
-
-
         response.put("saldoMovimentacoes", saldoMovimentacoes);
-
         response.put("transacoes", ultimasMovimentacoes);
         response.put("receitasPorCategoria", receitasPorCategoria);
         response.put("despesasPorCategoria", despesasPorCategoria);
@@ -88,20 +125,23 @@ public class DashboardController {
         movimentacoes.stream()
                 .filter(mov -> tipo.equalsIgnoreCase(mov.getTipo()))
                 .forEach(mov -> {
-                    String categoria = mov.getCategoria() != null && !mov.getCategoria().isBlank()
-                            ? mov.getCategoria()
-                            : "Sem categoria";
+                    String categoria =
+                            mov.getCategoria() != null && !mov.getCategoria().isBlank()
+                                    ? mov.getCategoria()
+                                    : "Sem categoria";
 
                     Double valorAtual = agrupado.getOrDefault(categoria, 0.0);
+
                     agrupado.put(categoria, valorAtual + mov.getValor());
                 });
 
         return agrupado.entrySet()
                 .stream()
                 .map(entry -> {
-                    Double percentual = total > 0
-                            ? (entry.getValue() / total) * 100
-                            : 0.0;
+                    Double percentual =
+                            total != null && total > 0
+                                    ? (entry.getValue() / total) * 100
+                                    : 0.0;
 
                     return new ResumoCategoriaDTO(
                             entry.getKey(),
