@@ -69,7 +69,6 @@ public class DashboardController {
         return montarResumo(usuarioId);
     }
 
-
     private Map<String, Object> montarResumo(Long usuarioId) {
 
         List<MovimentacaoDTO> movimentacoes =
@@ -106,8 +105,16 @@ public class DashboardController {
 
         response.put("receita", totalReceita);
         response.put("despesa", totalDespesa);
+
+
         response.put("saldoTotal", saldoTotalContas);
+
+
+        response.put("saldoContas", saldoTotalContas);
+
+
         response.put("saldoMovimentacoes", saldoMovimentacoes);
+
         response.put("transacoes", ultimasMovimentacoes);
         response.put("receitasPorCategoria", receitasPorCategoria);
         response.put("despesasPorCategoria", despesasPorCategoria);

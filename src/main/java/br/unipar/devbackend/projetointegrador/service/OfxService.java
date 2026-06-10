@@ -130,6 +130,8 @@ public class OfxService {
                             );
 
                             transacaoRepository.save(transacao);
+
+                            atualizarSaldoContaImportacao(conta, valorOriginal);
                         });
             });
         }
@@ -141,6 +143,7 @@ public class OfxService {
 
     @Transactional
     public void excluirArquivo(Long arquivoId, Long usuarioId) {
+
         OfxArquivo arquivo = ofxArquivoRepository.findById(arquivoId)
                 .orElseThrow(() -> new RuntimeException("Arquivo OFX não encontrado."));
 
@@ -148,9 +151,52 @@ public class OfxService {
             throw new RuntimeException("Este arquivo OFX não pertence ao usuário informado.");
         }
 
+        List<Transacao> transacoesDoArquivo =
+                transacaoRepository.findByArquivoOfxId(arquivoId);
+
+        for (Transacao transacao : transacoesDoArquivo) {
+            desfazerSaldoConta(transacao);
+        }
+
         transacaoRepository.deleteByArquivoOfxId(arquivoId);
 
         ofxArquivoRepository.delete(arquivo);
+    }
+
+    private void atualizarSaldoContaImportacao(ContaBancaria conta, Double valorOriginal) {
+
+        Double saldoAtual = conta.getSaldo() != null
+                ? conta.getSaldo()
+                : 0.0;
+
+        Double valor = valorOriginal != null
+                ? valorOriginal
+                : 0.0;
+
+        conta.setSaldo(saldoAtual + valor);
+
+        contaBancariaRepository.save(conta);
+    }
+
+    private void desfazerSaldoConta(Transacao transacao) {
+
+        ContaBancaria conta = transacao.getConta();
+
+        if (conta == null) {
+            return;
+        }
+
+        Double saldoAtual = conta.getSaldo() != null
+                ? conta.getSaldo()
+                : 0.0;
+
+        Double valorTransacao = transacao.getValor() != null
+                ? transacao.getValor()
+                : 0.0;
+
+        conta.setSaldo(saldoAtual - valorTransacao);
+
+        contaBancariaRepository.save(conta);
     }
 
     private Categoria buscarOuCriarCategoriaPadrao(
