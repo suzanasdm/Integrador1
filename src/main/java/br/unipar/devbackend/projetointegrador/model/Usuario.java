@@ -3,7 +3,7 @@ package br.unipar.devbackend.projetointegrador.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.http.ResponseEntity;
-
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.time.LocalDateTime;
 
 @Entity
@@ -18,7 +18,7 @@ public class Usuario {
 
     @Column(unique = true)
     private String email;
-
+    @JsonIgnore
     @Column(unique = false)
     private String senha;
 
