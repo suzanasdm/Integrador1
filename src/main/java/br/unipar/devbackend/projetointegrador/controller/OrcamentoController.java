@@ -11,7 +11,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/orcamentos")
-@CrossOrigin(origins = "*")
+
 public class OrcamentoController {
 
     private final OrcamentoService orcamentoService;

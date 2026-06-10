@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/contas")
-@CrossOrigin(origins = "*")
+
 public class ContaBancariaController {
 
     private final ContaBancariaService service;
