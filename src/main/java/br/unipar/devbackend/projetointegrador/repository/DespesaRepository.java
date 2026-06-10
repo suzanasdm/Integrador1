@@ -18,4 +18,5 @@ public interface DespesaRepository extends JpaRepository<Despesa, Long> {
     // ADICIONADO: Soma o total gasto de um usuário filtrando por uma categoria específica
     @Query("SELECT SUM(d.valor) FROM Despesa d WHERE d.usuario.id = :usuarioId AND d.categoria.id = :categoriaId")
     Double somarTotalPorUsuarioECategoria(@Param("usuarioId") Long usuarioId, @Param("categoriaId") Long categoriaId);
+    boolean existsByContaId(Long contaId);
 }

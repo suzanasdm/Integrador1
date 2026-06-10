@@ -14,4 +14,5 @@ public interface ReceitaRepository extends JpaRepository<Receita, Long> {
 
     @Query("SELECT SUM(r.valor) FROM Receita r WHERE r.usuario.id = :usuarioId")
     Double somarTotalPorUsuario(@Param("usuarioId") Long usuarioId);
+    boolean existsByContaId(Long contaId);
 }

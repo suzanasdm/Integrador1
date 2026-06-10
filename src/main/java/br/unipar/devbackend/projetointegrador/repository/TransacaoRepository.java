@@ -19,7 +19,7 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
             String fitId,
             Long contaId
     );
-
+    boolean existsByContaId(Long contaId);
 
     List<Transacao> findByUsuarioIdOrderByDataDesc(
             Long usuarioId
@@ -82,4 +82,5 @@ public interface TransacaoRepository extends JpaRepository<Transacao, Long> {
     @Transactional
     @Modifying
     void deleteByArquivoOfxId(Long arquivoOfxId);
+
 }
