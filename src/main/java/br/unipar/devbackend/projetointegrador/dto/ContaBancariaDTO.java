@@ -1,16 +1,13 @@
 package br.unipar.devbackend.projetointegrador.dto;
 
 import br.unipar.devbackend.projetointegrador.model.BancoEnum;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
 
 public class ContaBancariaDTO {
-   
+    @NotNull(message = "O banco é obrigatório")
     private BancoEnum banco;
 
     @NotBlank(message = "A agência é obrigatória")
@@ -21,9 +18,8 @@ public class ContaBancariaDTO {
     private String numeroConta;
 
     @NotNull(message = "O saldo inicial é obrigatório")
-    @Min(value = 0, message = "O saldo inicial deve ser maior ou igual a zero") // RN-02
+    @DecimalMin(value = "0.0", inclusive = true, message = "O saldo inicial deve ser maior ou igual a zero")
     private Double saldo;
-
     @NotNull(message = "O ID do usuário é obrigatório")
     private Long usuarioId;
 
