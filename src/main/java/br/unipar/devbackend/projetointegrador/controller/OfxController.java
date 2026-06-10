@@ -10,7 +10,7 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/ofx")
-@CrossOrigin("*")
+
 public class OfxController {
 
     private final OfxService ofxService;

@@ -9,7 +9,7 @@ import java.time.LocalDate;
 
 @RestController
 @RequestMapping("/api/fluxo-caixa")
-@CrossOrigin(origins = "*")
+
 public class FluxoCaixaController {
 
     private final FluxoCaixaService fluxoCaixaService;
