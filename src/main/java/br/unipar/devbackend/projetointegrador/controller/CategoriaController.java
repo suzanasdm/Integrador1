@@ -44,5 +44,8 @@ public class CategoriaController {
         return ResponseEntity.ok(
                 categoriaService.listarPorUsuarioETipo(usuarioId, tipo)
         );
+
     }
+
+
 }

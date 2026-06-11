@@ -3,8 +3,8 @@ package br.unipar.devbackend.projetointegrador.security;
 import br.unipar.devbackend.projetointegrador.model.Usuario;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import javax.crypto.SecretKey;
@@ -13,20 +13,9 @@ import java.util.Date;
 @Service
 public class JwtService {
 
-    /*
-     * Chave secreta usada para assinar o token.
-     *
-     * IMPORTANTE:
-     * Essa chave precisa ter tamanho suficiente para HS256.
-     * Depois podemos mover isso para o application.properties.
-     */
-    private static final String SECRET_KEY =
-            "CYBERSOFT_SECRET_KEY_SUPER_SEGURA_PARA_JWT_2026_MINIMO_32_CARACTERES";
+    @Value("${jwt.secret}")
+    private String secretKey;
 
-    /*
-     * Tempo de expiração do token.
-     * Aqui está configurado para 24 horas.
-     */
     private static final long EXPIRATION_TIME = 1000 * 60 * 60 * 24;
 
     public String gerarToken(Usuario usuario) {
@@ -65,7 +54,7 @@ public class JwtService {
     }
 
     private SecretKey getChaveAssinatura() {
-        byte[] keyBytes = SECRET_KEY.getBytes();
+        byte[] keyBytes = secretKey.getBytes();
 
         return Keys.hmacShaKeyFor(keyBytes);
     }
