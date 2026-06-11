@@ -17,21 +17,21 @@ public class CodigoRecuperacao {
     @Column(nullable = false)
     private String codigo;
 
-    // Atenção aqui: o JPA transforma CamelCase em snake_case (data_expiracao) no banco automaticamente
+
     @Column(name = "data_expiracao", nullable = false)
     private LocalDateTime dataExpiracao;
 
-    // 1. CONSTRUTOR PADRÃO (OBRIGATÓRIO para o Hibernate funcionar)
+
     public CodigoRecuperacao() {}
 
-    // 2. CONSTRUTOR COMPLETO (O que você usa no seu AutenticacaoService)
+
     public CodigoRecuperacao(String email, String codigo, LocalDateTime dataExpiracao) {
         this.email = email;
         this.codigo = codigo;
         this.dataExpiracao = dataExpiracao;
     }
 
-    // 3. GETTERS E SETTERS (Verifique se os nomes estão EXATAMENTE assim)
+   
     public Long getId() {
         return id;
     }

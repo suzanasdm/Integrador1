@@ -18,10 +18,10 @@ public class Receita {
     private String descricao;
 
     @ManyToOne
-    @JoinColumn(name = "conta_id") // Este campo "manda" na coluna
+    @JoinColumn(name = "conta_id")
     private ContaBancaria conta;
 
-    // Se você REALMENTE precisa manter o campo contaId separado:
+
     @Column(name = "conta_id", insertable = false, updatable = false)
     private Long contaId;
 
@@ -33,12 +33,12 @@ public class Receita {
     @Column(nullable = false)
     private LocalDate data;
 
-    // Relacionamento com Usuario
+
     @ManyToOne
     @JoinColumn(name = "usuario_id", nullable = false)
     private Usuario usuario;
 
-    // Relacionamento com Categoria
+   
     @ManyToOne
     @JoinColumn(name = "categoria_id", nullable = false)
     private Categoria categoria;

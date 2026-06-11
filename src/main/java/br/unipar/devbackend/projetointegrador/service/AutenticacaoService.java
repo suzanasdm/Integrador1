@@ -21,7 +21,7 @@ public class AutenticacaoService {
     private final JavaMailSender mailSender;
     private final PasswordEncoder passwordEncoder; // Adicionado aqui
 
-    // Construtor atualizado recebendo o passwordEncoder
+
     public AutenticacaoService(UsuarioRepository usuarioRepository,
                                CodigoRecuperacaoRepository codigoRepository,
                                JavaMailSender mailSender,
@@ -74,7 +74,7 @@ public class AutenticacaoService {
         Usuario usuario = usuarioRepository.findByEmail(email)
                 .orElseThrow(() -> new RuntimeException("Erro ao processar alteração: Usuário não localizado."));
 
-        // CORRIGIDO: Encripta a nova senha exatamente como o UsuarioService faz no cadastro!
+
         usuario.setSenha(passwordEncoder.encode(novaSenha));
         usuarioRepository.save(usuario);
 

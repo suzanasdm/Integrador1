@@ -31,7 +31,7 @@ public class Despesa {
     private Categoria categoria;
 
     @ManyToOne
-    @JoinColumn(name = "conta_id") // Este campo "manda" na coluna
+    @JoinColumn(name = "conta_id") 
     private ContaBancaria conta;
 
 

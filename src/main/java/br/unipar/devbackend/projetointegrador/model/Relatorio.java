@@ -22,5 +22,5 @@ public class Relatorio {
 
     private String formato;
 
-    // Métodos: gerarRelatorio()
+
 }

@@ -47,25 +47,25 @@ public class SecurityConfig {
 
                 .authorizeHttpRequests(auth -> auth
 
-                        // libera requisições OPTIONS do Angular/CORS
+
                         .requestMatchers(HttpMethod.OPTIONS, "/**").permitAll()
 
-                        // cadastro e login
+
                         .requestMatchers(HttpMethod.POST, "/api/usuarios").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/usuarios/login").permitAll()
 
-                        // recuperação de senha
+
                         .requestMatchers(HttpMethod.POST, "/api/auth/recuperar-senha").permitAll()
                         .requestMatchers(HttpMethod.POST, "/api/auth/redefinir-senha").permitAll()
 
-                        // Swagger, se você estiver usando
+
                         .requestMatchers(
                                 "/swagger-ui/**",
                                 "/v3/api-docs/**",
                                 "/swagger-ui.html"
                         ).permitAll()
 
-                        // qualquer outro endpoint precisa de token
+
                         .anyRequest().authenticated()
                 )
 

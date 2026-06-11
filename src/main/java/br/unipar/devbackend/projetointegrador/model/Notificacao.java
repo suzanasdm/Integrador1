@@ -23,5 +23,5 @@ public class Notificacao {
     @JoinColumn(name = "usuario_id")
     private Usuario usuario;
 
-    // Métodos: enviar(), armazenarHistorico()
+    
 }
